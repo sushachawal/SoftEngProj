@@ -222,6 +222,7 @@ void userint::runcmd (void)
   cyclescompleted = 0;
   rdnumber (ncycles, 1, maxcycles);
   if (cmdok) {
+    dmz->initdevices ();
     mmz->resetmonitor ();
     cout << "Running for " << ncycles << " cycles" << endl;
     runnetwork(ncycles);

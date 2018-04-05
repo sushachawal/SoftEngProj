@@ -1,6 +1,7 @@
 #include "devices.h"
 #include <iostream>
 #include <string>
+#include <cstdlib>
 
 using namespace std;
 
@@ -357,6 +358,27 @@ void devices::updateclocks (void)
 
 /***********************************************************************
  *
+ * Randomizes states of clocks and flip-flops.
+ *
+ */
+void devices::initdevices (void)
+{
+  devlink d;
+  for (d = netz->devicelist (); d != NULL; d = d->next) {
+    if (d->kind == aclock) {
+      if (rand()%2) d->olist->sig = low;
+      else d->olist->sig = high;
+      d->counter = rand()%d->frequency;
+    }
+    if (d->kind == dtype)
+      if (rand()%2) d->memory = low;
+      else d->memory = high;
+  }
+}
+
+
+/***********************************************************************
+ *
  * Executes all devices in the network to simulate one complete clock 
  * cycle. 'ok' is returned false if network fails to stabilise (i.e.  
  * it is oscillating).                                            
@@ -446,6 +468,7 @@ devices::devices (names* names_mod, network* net_mod)
 {
   nmz = names_mod;
   netz = net_mod;
+  srand(time(NULL));
   dtab[aswitch]   =  nmz->lookup("SWITCH");
   dtab[aclock]    =  nmz->lookup("CLOCK");
   dtab[andgate]   =  nmz->lookup("AND");

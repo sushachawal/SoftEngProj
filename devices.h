@@ -44,7 +44,10 @@ public:
     /* Executes all devices in the network to simulate one complete clock  */
     /* cycle. 'ok' is returned false if network fails to stabilise (i.e.   */
     /* it is oscillating). */                                             
- 
+
+  void initdevices (void);
+    /* Randomizes states of clocks and flip-flops.                         */
+
   devicekind devkind (name id);
     /* Returns the kind of device corresponding to the given name.         */
     /* 'baddevice' is returned if the name is not a legal device.          */

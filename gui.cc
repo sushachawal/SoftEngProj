@@ -232,6 +232,7 @@ void MyFrame::OnButton(wxCommandEvent &event)
   int n, ncycles;
 
   cyclescompleted = 0;
+  dmz->initdevices ();
   mmz->resetmonitor ();
   runnetwork(spin->GetValue());
   canvas->Render("Run button pressed", cyclescompleted);
