@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 CLOCK CLK1 3;
 SWITCH SW1 1;
 XOR XOR1;
@@ -12,3 +13,6 @@ OR1 -> XOR1.I2;
 OR1 -> NAND1.I2;
 NAND1 -> OR1.I3;
 MONITOR XOR1 OR1.I3;
+=======
+Testing...testing...123
+>>>>>>> added test file
