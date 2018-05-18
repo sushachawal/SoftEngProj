@@ -15,20 +15,36 @@ names::names(void)  /* the constructor */
 
 name names::lookup (namestring str)
 {
-  /* over to you */
+  	int i = 0;
+	for (i = 0; i < book.size(); i++) {
+		if (str == book[i]) {
+			return i;
+			break;
+		}
+	}
+	book.push_back(str);
+	return i;
 }
 
 name names::cvtname (namestring str)
 {
-  /* over to you */
+	for (int i = 0; i < book.size(); i++) {
+		if (str == book[i]) {
+			return str;
+			break;
+		}
+	}
+	else {
+		return 'blankname';
+	}
 }
 
 void names::writename (name id)
 {
-  /* over to you */
+	cout << book[id];
 }
 
 int names::namelength (name id)
 {
-  /* over to you */
+	return book[id].length();
 }

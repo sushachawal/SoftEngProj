@@ -14,7 +14,7 @@ typedef string namestring;
 
 class names{
 
-  /* put stuff that the class uses internally here */
+	vector<namestring> book;
 
 
 public:
