@@ -2,6 +2,7 @@
 #define names_h
 
 #include <string>
+#include <unordered_map>
 
 using namespace std;
 
@@ -14,8 +15,9 @@ typedef string namestring;
 
 class names{
 
-	vector<namestring> book;
-
+private:
+  unordered_map<namestring, name> namestrtoname;
+  unordered_map<name, namestring> nametonamestr;
 
 public:
   name lookup (namestring str);

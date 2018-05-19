@@ -15,36 +15,37 @@ names::names(void)  /* the constructor */
 
 name names::lookup (namestring str)
 {
-  	int i = 0;
-	for (i = 0; i < book.size(); i++) {
-		if (str == book[i]) {
-			return i;
-			break;
-		}
-	}
-	book.push_back(str);
-	return i;
+  static name count = 0; //Create a counter to ensure unique key/values.
+  auto search = namestrtoname.find(str); //C++ 11 auto, automatically picks type!
+  if (search != namestrtoname.end()) return search->second; //Return value
+  else {
+    //If maxnames is about to be exceeded throw an error.
+    if (count + 1 > maxnames){
+      cout << "Warning maximum number of names " << "(" << maxnames << ") ";
+      cout << "has been reached! " << "\'" << str << "\'" << "was rejected.";
+      cout << endl;
+      return blankname;
+    }
+    //Otherwise go ahead and insert it into the map
+    namestrtoname[str] = count++; //Assign count THEN increment it
+    nametonamestr[namestrtoname[str]] = str; //Add new name to both maps
+    return namestrtoname[str];
+  }
 }
 
 name names::cvtname (namestring str)
 {
-	for (int i = 0; i < book.size(); i++) {
-		if (str == book[i]) {
-			return str;
-			break;
-		}
-	}
-	else {
-		return 'blankname';
-	}
+  auto search = namestrtoname.find(str); //C++ 11 auto, automatically picks type!
+  if (search != namestrtoname.end()) return search->second;
+  else return blankname;
 }
 
 void names::writename (name id)
 {
-	cout << book[id];
+	cout << nametonamestr[id];
 }
 
 int names::namelength (name id)
 {
-	return book[id].length();
+	return nametonamestr[id].length();
 }
