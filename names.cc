@@ -10,12 +10,20 @@ using namespace std;
 
 names::names(void)  /* the constructor */
 {
-  /* over to you */
+  name temp = lookup("CLK");
+  temp = lookup("SWITCH");
+  temp = lookup("AND");
+  temp = lookup("NAND");
+  temp = lookup("OR");
+  temp = lookup("NOR");
+  temp = lookup("DTYPE");
+  temp = lookup("XOR");
+  temp = lookup("CONNECT");
+  temp = lookup("MONITOR");
 }
 
 name names::lookup (namestring str)
 {
-  static name count = 0; //Create a counter to ensure unique key/values.
   auto search = namestrtoname.find(str); //C++ 11 auto, automatically picks type!
   if (search != namestrtoname.end()) return search->second; //Return value
   else {
@@ -43,6 +51,13 @@ name names::cvtname (namestring str)
 void names::writename (name id)
 {
 	cout << nametonamestr[id];
+}
+
+void names::printall ()
+{
+	for (int i=0; i<count; i++) {
+		cout << nametonamestr[i] << endl;
+	}
 }
 
 int names::namelength (name id)

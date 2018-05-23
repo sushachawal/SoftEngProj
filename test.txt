@@ -1,3 +1,2 @@
-Testing...testing...123
-
-New test
+CLK CLK1 3; 
+SWITCH SW1 1;
