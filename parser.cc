@@ -17,7 +17,33 @@ bool parser::readin (void)
 void parser::generator(void){
   smz->getsymbol(cursym, curid, curnum);
   if(cursym == scanner::gensym) {
-  }
+	  if (curid == smz->nmz->lookup("CLK")) {
+		  smz->getsymbol(cursym, curid, curnum);
+		  if(cursym == scanner::namesym){
+			  if (cursym == scanner::numsym){
+				  if(curnum > 0){
+					  cout << "Making clock device.." << endl;
+					  smz->nmz->writename(curid);
+					  cout << endl;
+				  } else error();
+			  } else error();
+		  } else error();
+	  }
+	  else if (curid == smz->nmz->lookup("SWITCH")) {
+		  smz->getsymbol(cursym, curid, curnum);
+		  if(cursym == scanner::namesym){
+			  if (cursym == scanner::numsym){
+				  if(curnum == 1 || curnum == 0){
+					  cout << "Making switch device.." << endl;
+					  smz->nmz->writename(curid);
+					  cout << endl;
+				  } else error();
+			  } else error();
+		  } else error();
+	  }
+	  else error();
+  } else error();
+  
 }
 
 void parser::devs(){
@@ -43,7 +69,7 @@ void parser::logic(void){
   if(cursym == scanner::namesym){
     smz->getsymbol(cursym, curid, curnum);
     if (cursym == scanner::numsym){
-      if(!(curnum <=16 && curnum > 0)){
+      if(curnum <=16 && curnum > 0){
         cout << "Making logic device..." << endl;
         smz->nmz->writename(curid);
         cout << endl;
