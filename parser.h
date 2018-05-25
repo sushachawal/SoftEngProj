@@ -18,6 +18,19 @@ class parser {
 
   /* put other stuff that the class uses internally here */
   /* also declare internal functions                     */
+  scanner::symbol cursym;
+  name curid;
+  int curnum;
+  void generator(void);
+  void devs(void);
+  void dev(void);
+  void logic(void);
+  void dtype(void);
+  void Xor(void);
+  void connections(void);
+  void monitors(void);
+  void error(void);
+  void checkendsym(void);
 
 
  public:
