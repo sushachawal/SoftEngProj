@@ -28,7 +28,8 @@ int main(int argc, char **argv)
   
   for (int i=0; i<9; i++) {
 	  smz->getsymbol(s, test_id, test_num);
-	  cout << s << endl;
+	  cout << s << ": ";
+	  nmz->writename(test_id);
+	  cout << " " << test_num << " line: " << smz->line << " character number: " << smz->c_count << endl;
   }
-  nmz->printall();
 }

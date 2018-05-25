@@ -14,7 +14,7 @@ class scanner {
 	char curch; // current character
 	bool eofile; // true when end of file has been reached
 	ifstream inf; // input file to be read from
-	names* nmz;
+	// names* nmz;
 	
 	name clkname;
 	name swtchname;
@@ -28,8 +28,12 @@ class scanner {
     name monitorname;
 	
 public:
+	names* nmz;
 
-	typedef enum {gensym, devsym, consym, monsym, 
+	int line; // line counter
+	int c_count; // character counter, reset every line
+
+	typedef enum {gensym, logsym, dtypesym, xorsym, consym, monsym, 
 		namesym, numsym, eofsym, semicol, dotsym, badsym} symbol;
 		
 	// this is the constructor of the scanner class

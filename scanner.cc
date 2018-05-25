@@ -9,6 +9,8 @@ using namespace std;
 
 scanner::scanner(names* names_mod, const char* defname) 
 {
+	line = 0;
+	c_count = 0;
 	
 	nmz = names_mod;	
 	eofile = false;
@@ -36,6 +38,8 @@ scanner::scanner(names* names_mod, const char* defname)
 void scanner::getch()
 {
 	eofile = (!inf.get(curch));
+	c_count ++;
+	getline(inf, line);
 }
 
 void scanner::skipspaces()
@@ -52,7 +56,7 @@ void scanner::getname(name& id)
 	while (!eofile) {
 		if (isdigit(curch) || isalpha(curch)) {
 			str += curch;
-			eofile = (!inf.get(curch)); 
+			getch();
 		}
 		else {
 			id = nmz->lookup(str);
@@ -66,13 +70,15 @@ void scanner::getname(name& id)
 void scanner::getnumber(int& num) 
 {
 	num = curch - '0';
-	eofile = !inf.get(curch); // get next character
+	getch(); // get next character
 	if(eofile) return;
 	while (isdigit(curch)) 
 	{
 		num = num*10 + curch -'0';
-		eofile = !inf.get(curch);
-		if(eofile) return;
+		getch();
+		if (eofile) {
+			return;
+		}
 	}
 }
 
@@ -93,16 +99,24 @@ void scanner::getsymbol(symbol& s, name& id, int& num)
 				if (id == clkname || id == swtchname){
 					s=gensym;
 				} else{
-					if (id == andname || id == nandname || id == orname || id == norname || id == dtypename || id == xorname){
-						s = devsym;
+					if (id == andname || id == nandname || id == orname || id == norname){
+						s = logsym;
 					} else {
-						if (id == connectname) {
-							s=consym; 
-						} else {
-							if (id == monitorname) {
-								s=monsym; 
-							} else {
-								s=namesym; // not a keyword
+						if (id == dtypename) {
+							s = dtypesym;
+						}else { 
+							if (id == xorname) {
+								s = xorsym;
+							}else {
+								if (id == connectname) {
+									s=consym; 
+								} else {
+									if (id == monitorname) {
+										s=monsym; 
+									} else {
+										s=namesym; // not a keyword
+									}
+								}
 							}
 						}
 					}
