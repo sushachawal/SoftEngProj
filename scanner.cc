@@ -7,14 +7,14 @@
 
 using namespace std;
 
-scanner::scanner(names* names_mod, const char* defname) 
+scanner::scanner(names* names_mod, const char* defname)
 {
 	line = 0;
 	c_count = 0;
-	
-	nmz = names_mod;	
+
+	nmz = names_mod;
 	eofile = false;
-	
+
 	clkname = nmz->lookup("CLK");
 	swtchname = nmz->lookup("SWITCH");
 	andname = nmz->lookup("AND");
@@ -25,9 +25,9 @@ scanner::scanner(names* names_mod, const char* defname)
     xorname = nmz->lookup("XOR");
     connectname = nmz->lookup("CONNECT");
     monitorname = nmz->lookup("MONITOR");
-    
+
 	inf.open(defname);
-	 
+
 	if (!inf) {
 		cout << "Error: cannot open file " << defname << " for reading" << endl;
 		exit(1);
@@ -39,6 +39,7 @@ void scanner::getch()
 {
 	eofile = (!inf.get(curch));
 	c_count ++;
+<<<<<<< HEAD
 	if (curch == '\n') {
 		line++;
 		c_count = 0;
@@ -55,7 +56,7 @@ void scanner::skipspaces()
 void scanner::getname(name& id)
 {
 	namestring str = ""; // to store the namestring
-	
+
 	while (!eofile) {
 		if (isdigit(curch) || isalpha(curch)) {
 			str += curch;
@@ -70,12 +71,12 @@ void scanner::getname(name& id)
 	return;
 }
 
-void scanner::getnumber(int& num) 
+void scanner::getnumber(int& num)
 {
 	num = curch - '0';
 	getch(); // get next character
 	if(eofile) return;
-	while (isdigit(curch)) 
+	while (isdigit(curch))
 	{
 		num = num*10 + curch -'0';
 		getch();
@@ -91,10 +92,10 @@ void scanner::getsymbol(symbol& s, name& id, int& num)
 	if (eofile) {
 		s = eofsym;
 	}
-	else { 
+	else {
 		if (isdigit(curch)) { // number
 			s=numsym;
-			getnumber(num); 
+			getnumber(num);
 		}
 		else {
 			if (isalpha(curch)) { // name
@@ -107,15 +108,15 @@ void scanner::getsymbol(symbol& s, name& id, int& num)
 					} else {
 						if (id == dtypename) {
 							s = dtypesym;
-						}else { 
+						}else {
 							if (id == xorname) {
 								s = xorsym;
 							}else {
 								if (id == connectname) {
-									s=consym; 
+									s=consym;
 								} else {
 									if (id == monitorname) {
-										s=monsym; 
+										s=monsym;
 									} else {
 										s=namesym; // not a keyword
 									}
@@ -123,7 +124,7 @@ void scanner::getsymbol(symbol& s, name& id, int& num)
 							}
 						}
 					}
-				} 
+				}
 			}else {
 				switch(curch) {
 					case ';': s=semicol; break;
