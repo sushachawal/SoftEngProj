@@ -18,13 +18,14 @@ void parser::generator(void){
   smz->getsymbol(cursym, curid, curnum);
   if(cursym == scanner::gensym) {
   }
+  cout << "Skipping generators for now..." <<endl;
 }
 
 void parser::devs(){
   if(cursym == scanner::logsym||cursym == scanner::dtypesym||cursym == scanner::xorsym) {
 	  dev();
-  } else error();
-  
+  } else cout << "No device found" <<endl;
+
   while(cursym == scanner::logsym||cursym == scanner::dtypesym||cursym == scanner::xorsym){
     dev();
   }
@@ -43,7 +44,7 @@ void parser::logic(void){
   if(cursym == scanner::namesym){
     smz->getsymbol(cursym, curid, curnum);
     if (cursym == scanner::numsym){
-      if(!(curnum <=16 && curnum > 0)){
+      if(curnum <=16 && curnum > 0){
         cout << "Making logic device..." << endl;
         smz->nmz->writename(curid);
         cout << endl;
@@ -80,12 +81,12 @@ void parser::checkendsym(void){
   error();
 }
 
-parser::parser (network* network_mod, devices* devices_mod,
-		monitor* monitor_mod, scanner* scanner_mod)
+parser::parser (/*network* network_mod, devices* devices_mod,
+		monitor* monitor_mod,*/ scanner* scanner_mod)
 {
-  netz = network_mod;  /* make internal copies of these class pointers */
-  dmz = devices_mod;   /* so we can call functions from these classes  */
-  mmz = monitor_mod;   /* eg. to call makeconnection from the network  */
+  //netz = network_mod;  /* make internal copies of these class pointers */
+  //dmz = devices_mod;   /* so we can call functions from these classes  */
+  //mmz = monitor_mod;   /* eg. to call makeconnection from the network  */
   smz = scanner_mod;   /* class you say:                               */
                        /* netz->makeconnection (i1, i2, o1, o2, ok);   */
 
