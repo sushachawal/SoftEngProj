@@ -10,17 +10,21 @@ bool parser::readin (void)
 {
   generator();
   devs();
-	connections();
+  connections();
   monitors();
 }
 
 void parser::generator(void){
-  //smz->getsymbol();
-  cout << "Skipping generators for now..." << endl;
+  smz->getsymbol(cursym, curid, curnum);
+  if(cursym == scanner::gensym) {
+  }
 }
 
 void parser::devs(){
-  dev();
+  if(cursym == scanner::logsym||cursym == scanner::dtypesym||cursym == scanner::xorsym) {
+	  dev();
+  } else error();
+  
   while(cursym == scanner::logsym||cursym == scanner::dtypesym||cursym == scanner::xorsym){
     dev();
   }

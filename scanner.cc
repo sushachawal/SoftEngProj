@@ -39,7 +39,6 @@ void scanner::getch()
 {
 	eofile = (!inf.get(curch));
 	c_count ++;
-<<<<<<< HEAD
 	if (curch == '\n') {
 		line++;
 		c_count = 0;
