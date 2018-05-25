@@ -39,7 +39,10 @@ void scanner::getch()
 {
 	eofile = (!inf.get(curch));
 	c_count ++;
-	getline(inf, line);
+	if (curch == '\n') {
+		line++;
+		c_count = 0;
+	}
 }
 
 void scanner::skipspaces()
