@@ -9,28 +9,106 @@ using namespace std;
 
 bool parser::readin (void)
 {
-  try{
+  stage = 1;
+  parsed = false;
+  eofile = false;
+  errorcount = 0;
+  smz->getsymbol(cursym, curid, curnum); // gets first symbol. makes initialisation compatable with error recovery.
+  while(!parsed){
+    try{
+      begin(stage);
+    }
+    catch(parser_exception& e) {
+      smz->reporterror();
+      cout << e.get_info() << endl;
+      errorcount ++;
+      recover();
+    }
+  }
+  
+  return eofile;
+}
+
+void parser::begin(int stage){
+  switch(stage){
+    case(-1):
+      parsed = true;
+      eofile = true;
+      break;
+    case(-2):
+      cout << "Cannot complete parsing" << endl;
+      parsed = true;
+      break;
+    case(1):
       generators();
       devs();
       connections();
       monitors();
+      parsed = true;
+      eofile = true;
+      break;
+    case(2):
+      devs();
+      connections();
+      monitors();
+      parsed = true;
+      eofile = true;
+      break;
+    case(3):
+      connections();
+      monitors();
+      parsed = true;
+      eofile = true;
+      break;
+    case(4):
+      monitors();
+      parsed = true;
+      eofile = true;
+      break;
+    default: parser_exception("Error: invalid stage");
+      break;
   }
-  catch(parser_exception& e) {
-    smz->reporterror();
-    cout << e.get_info() << endl;
-    // continue until next semicol
-    return false;
+}
+
+void parser::recover(void){
+  while(cursym != scanner::semicol && cursym != scanner::eofsym){
+    smz->getsymbol(cursym, curid, curnum);
   }
-  return true;
+  if(cursym == scanner::eofsym){
+    stage = -2;
+  } else{
+    smz->getsymbol(cursym, curid, curnum);
+    switch(cursym){
+      case(scanner::eofsym):
+        stage = -1;
+        break;
+      case(scanner::gensym):
+        stage = 1;
+        break;
+      case(scanner::logsym):
+      case(scanner::dtypesym):
+      case(scanner::xorsym):
+        stage = 2;
+        break;
+      case(scanner::namesym): // can only be namesym after ; if connection
+        stage = 3;
+        break;
+      case(scanner::monsym):
+        stage = 4;
+        break;
+      default:
+        stage = -2;
+        break;
+    }
+  }
 }
 
 void parser::generators(void){
-  smz->getsymbol(cursym, curid, curnum);
   if(cursym == scanner::gensym) {
-	  generator();
-  } else throw parser_exception("Error: No generator found");
+    generator();
+  } else throw parser_exception("Error: No generator found"); // begin in stage 2
   while (cursym == scanner::gensym) {
-	  generator();
+    generator();
   }
 }
 
@@ -41,7 +119,7 @@ void parser::generator(void){
               smz->getsymbol(cursym, curid, curnum);
 			  if (cursym == scanner::numsym){
 				  if(curnum > 0){
-					  cout << "Making clock device.." << endl;
+					  cout << "Making clock device ";
 					  smz->nmz->writename(curid);
 					  cout << endl;
           } else throw parser_exception("Error: CLK number must be greater than 0"); // error();
@@ -56,7 +134,7 @@ void parser::generator(void){
               smz->getsymbol(cursym, curid, curnum);
 			  if (cursym == scanner::numsym){
 				  if(curnum == 1 || curnum == 0){
-					  cout << "Making switch device.." << endl;
+					  cout << "Making switch device ";
 					  smz->nmz->writename(curid);
 					  cout << endl;
           } else throw parser_exception("Error: initial state takes values 0 or 1"); // error();
@@ -96,7 +174,7 @@ void parser::logic(void){
     smz->getsymbol(cursym, curid, curnum);
     if (cursym == scanner::numsym){
       if(curnum <=16 && curnum > 0){
-        cout << "Making logic device..." << endl;
+        cout << "Making logic device ";
         smz->nmz->writename(curid);
         cout << endl;
       }else throw parser_exception("Error: number of inputs not in range 1-16"); // error();
@@ -109,7 +187,7 @@ void parser::logic(void){
 void parser::dtype(void){
     smz->getsymbol(cursym, curid, curnum);
     if(cursym == scanner::namesym){
-        cout << "Making dtype device..." << endl;
+        cout << "Making dtype device ";
         smz->nmz->writename(curid);
         cout << endl;
         checkendsym();
@@ -120,7 +198,7 @@ void parser::dtype(void){
 void parser::Xor(void){
     smz->getsymbol(cursym, curid, curnum);
     if(cursym == scanner::namesym){
-        cout << "Making xor device..." << endl;
+        cout << "Making xor device ";
         smz->nmz->writename(curid);
         cout << endl;
         checkendsym();
@@ -134,6 +212,7 @@ void parser::connections(void){
         output();
         if(cursym == scanner::arrowsym){
             cout << " to input ";
+            smz->getsymbol(cursym, curid, curnum);
             input();
             cout << endl;
             checkendsym();
@@ -151,15 +230,14 @@ void parser::output(void){
         cout << ".Q";
         smz->getsymbol(cursym, curid, curnum);
       } else if(curid == smz->nmz->cvtname("QBAR")){
-          cout << ".QBAR";
-          smz->getsymbol(cursym, curid, curnum);
+        cout << ".QBAR";
+        smz->getsymbol(cursym, curid, curnum);
       } else throw parser_exception("Error: invalid output pin. Expected 'Q'/'QBAR'");
     } else throw parser_exception("Error: invalid output pin");
   } else smz->nmz->writename(curid);
 }
 
 void parser::input(void){
-    smz->getsymbol(cursym, curid, curnum);
     if(cursym == scanner::namesym){
         devid = curid;
         smz->getsymbol(cursym, curid, curnum);
@@ -177,28 +255,33 @@ void parser::input(void){
 
 void parser::monitors(void){
     if(cursym == scanner::monsym){
-        cout << "Monitoring ";
-        smz->getsymbol(cursym, curid, curnum);
-        while(cursym != scanner::semicol){
-            if(cursym == scanner::namesym){
+      cout << "Monitoring ";
+      smz->getsymbol(cursym, curid, curnum);
+      while(cursym != scanner::semicol){
+        if(cursym == scanner::namesym){
+          smz->nmz->writename(curid);
+          smz->getsymbol(cursym, curid, curnum);
+          if(cursym == scanner::namesym){
+            cout << " ";
+            smz->nmz->writename(curid);
+            smz->getsymbol(cursym, curid, curnum);
+          } else if(cursym == scanner::dotsym){
+              cout << ".";
+              smz->getsymbol(cursym, curid, curnum);
+              if(cursym == scanner::namesym){
                 smz->nmz->writename(curid);
                 smz->getsymbol(cursym, curid, curnum);
-                if(cursym == scanner::namesym){
-                    cout << " ";
-                    smz->nmz->writename(curid);
-                    smz->getsymbol(cursym, curid, curnum);
-                } else if(cursym == scanner::dotsym){
-                    cout << ".";
-                    smz->getsymbol(cursym, curid, curnum);
-                    if(cursym == scanner::namesym){
-                        smz->nmz->writename(curid);
-                        smz->getsymbol(cursym, curid, curnum);
-                    } else throw parser_exception("Error: invalid output/input pin");
-                } else {
-                    throw parser_exception("Error: expected '.' or output/input pin");
-                }
-            } else throw parser_exception("Error: expected output/input pin");
-        } cout << endl; // done
+              } else throw parser_exception("Error: invalid output/input pin");
+          } else {
+            throw parser_exception("Error: expected '.' or output/input pin");
+          }
+        } else throw parser_exception("Error: expected output/input pin");
+      }
+      smz->getsymbol(cursym, curid, curnum); // Should be eofsym
+      if(cursym != scanner::eofsym){
+        throw parser_exception("Error: end of file expected");
+      }
+      cout << endl;
     } else throw parser_exception("Error: expected 'MONITOR'");
 }
 

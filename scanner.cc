@@ -41,7 +41,6 @@ void scanner::getch()
   if (curch == '\n') {
     line++;
     c_count = 0;
-    return;
   } else c_count ++;
 }
 
@@ -155,7 +154,8 @@ void scanner::reporterror()
   inf.seekg(0, inf.beg); // go to the beginning of the file
   
   for (counter = 0; counter <= line; counter ++){
-    getline(inf, line_str);
+    if(!getline(inf, line_str)){
+    }
   }
   inf.seekg(pos, inf.beg); // return to position before line is read
 
@@ -163,7 +163,7 @@ void scanner::reporterror()
     report_str += ' ';
   }
   report_str[c_count-2] = '^';
-  cout << "Line: " << line << " Character: " << c_count << endl;
-  cout << out_str << endl;
+  cout << endl << "Line: " << line << " Character: " << c_count << endl;
+  cout << line_str << endl;
   cout << report_str << endl;
 }

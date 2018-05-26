@@ -17,5 +17,5 @@ int main(int argc, char **argv){
   nmz = new names();
   smz = new scanner(nmz, argv[1]);
   prsr = new parser(smz);
-  prsr -> readin();
+  cout << prsr -> readin() << endl;
 }

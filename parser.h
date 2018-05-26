@@ -14,13 +14,19 @@
 using namespace std;
 
 class parser_exception : public std::exception {
-    const char* info;
+  const char* info;
+  int stage;
     
 public:
-    parser_exception(const char* info_) :
-    info (info_){
-    }
-    const char* get_info() const { return info; }
+  parser_exception(const char* info_) :
+  info (info_),
+  stage (-1){
+  }
+  
+  const char* get_info() const {
+    return info;
+    
+  }
 };
 
 class parser {
@@ -37,6 +43,10 @@ class parser {
   name curid;
   int curnum;
   name devid; // used for storing the full output pin description
+  int stage; // used for jumping into a particular stage of parsing
+  int errorcount; // counts the number of errors
+  bool parsed; // true when file is parsed
+  bool eofile; // true when end of file is reached
   void generators(void);
   void generator(void);
   void devs(void);
@@ -50,6 +60,11 @@ class parser {
   void monitors(void);
   void error(void);
   void checkendsym(void);
+  void begin(int stage); // restarts the program in stage: 1 generators()
+                          //                                2 devs()
+                          //                                3 connections()
+                          //                                4 monitors()
+  void recover(void); // get first symbol after first semicolon is found
 
 
  public:
