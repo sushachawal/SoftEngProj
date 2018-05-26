@@ -22,6 +22,11 @@ names::names(void)  /* the constructor */
   temp = lookup("MONITOR");
 }
 
+namestring names::getname (name id)
+{
+  return nametonamestr[id];
+}
+
 name names::lookup (namestring str)
 {
   auto search = namestrtoname.find(str); //C++ 11 auto, automatically picks type!

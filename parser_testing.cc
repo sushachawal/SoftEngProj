@@ -11,11 +11,23 @@ int main(int argc, char **argv){
   }
 
   names *nmz;
+  network *netz;
+  devices *dmz;
+  monitor *mmz;
   scanner *smz;
   parser *prsr;
-
+  
+  // Construct the six classes required by the innards of the logic simulator
   nmz = new names();
+  netz = new network(nmz);
+  dmz = new devices(nmz, netz);
+  mmz = new monitor(nmz, netz);
   smz = new scanner(nmz, argv[1]);
-  prsr = new parser(smz);
+  prsr = new parser(netz, dmz, mmz, smz);
   cout << prsr -> readin() << endl;
+  
+  devlink device_list = netz->devicelist();
+  bool ok;
+  netz->checknetwork(ok);
+  cout << ok << endl;
 }

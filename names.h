@@ -20,7 +20,10 @@ private:
   unordered_map<name, namestring> nametonamestr;
   name count = 0; //Create a counter to ensure unique key/values.
 
-public:                     
+public:
+  namestring getname (name id);
+    /* Returns namestring given the name id                                */
+  
   name lookup (namestring str);
     /* Returns the internal representation of the name given in character  */
     /* form.  If the name is not already in the name table, it is          */

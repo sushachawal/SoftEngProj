@@ -3,11 +3,9 @@
 
 #include "names.h"
 #include "scanner.h"
-/*
 #include "network.h"
 #include "devices.h"
 #include "monitor.h"
-*/
 #include <exception>
 
 
@@ -30,16 +28,15 @@ public:
 };
 
 class parser {
-  /*
+  
   network* netz; // instantiations of various classes for parser to use.
   devices* dmz;
   monitor* mmz;
-  */
   scanner* smz;
 
   /* put other stuff that the class uses internally here */
   /* also declare internal functions                     */
-  scanner::symbol cursym;
+  symbol cursym;
   name curid;
   int curnum;
   name devid; // used for storing the full output pin description
@@ -51,12 +48,12 @@ class parser {
   void generator(void);
   void devs(void);
   void dev(void);
-  void logic(void);
-  void dtype(void);
+  void logic(devicekind dkind);
+  void dtype_(void);
   void Xor(void);
   void connections(void);
-  void output(void);
-  void input(void);
+  void output(name outdev, name& outsig);
+  void input(name indev, name& insig);
   void monitors(void);
   void error(void);
   void checkendsym(void);
@@ -73,8 +70,8 @@ class parser {
     /* corresponding internal representation via calls to the 'Network'    */
     /* module and the 'Devices' module.                                    */
 
-  parser (/*network* network_mod, devices* devices_mod,
-	  monitor* monitor_mod,*/ scanner* scanner_mod);
+  parser (network* network_mod, devices* devices_mod,
+	  monitor* monitor_mod, scanner* scanner_mod);
     /* the constructor takes pointers to various other classes as parameters */
 };
 

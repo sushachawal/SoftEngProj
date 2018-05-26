@@ -2,12 +2,16 @@
 #define scanner_h
 
 #include "names.h"
-#include "scanner.h"
 #include <iostream>
 #include <fstream>
 
 
 using namespace std;
+
+/* Symbol specification */
+
+typedef enum {gensym, andsym, nandsym, orsym, norsym, dtypesym, xorsym, consym, monsym,
+  namesym, numsym, eofsym, semicol, dotsym, arrowsym, badsym} symbol;
 
 class scanner {
 	
@@ -19,22 +23,19 @@ class scanner {
 	name clkname;
 	name swtchname;
 	name andname;
-    name nandname;
-    name orname;
-    name norname;
-    name dtypename;
-    name xorname;
-    name connectname;
-    name monitorname;
+  name nandname;
+  name orname;
+  name norname;
+  name dtypename;
+  name xorname;
+  name connectname;
+  name monitorname;
 	
 public:
 	names* nmz;
 
 	int line; // line counter
 	int c_count; // character counter, reset every line
-
-	typedef enum {gensym, logsym, dtypesym, xorsym, consym, monsym, 
-		namesym, numsym, eofsym, semicol, dotsym, arrowsym, badsym} symbol;
 		
 	// this is the constructor of the scanner class
 	scanner(names* names_mod,     // pointer to names class, so scanner can use it
