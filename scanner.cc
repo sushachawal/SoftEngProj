@@ -148,7 +148,6 @@ void scanner::getsymbol(symbol& s, name& id, int& num)
 void scanner::reporterror()
 {
   string line_str;
-  string out_str = "";
   string report_str = "";
   int counter;
   
@@ -161,7 +160,6 @@ void scanner::reporterror()
   inf.seekg(pos, inf.beg); // return to position before line is read
 
   for (counter= 0; counter < c_count-1; counter++){
-    out_str += line_str[counter];
     report_str += ' ';
   }
   report_str[c_count-2] = '^';
