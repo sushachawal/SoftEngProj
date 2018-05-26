@@ -15,7 +15,7 @@ scanner::scanner(names* names_mod, const char* defname)
 	nmz = names_mod;
 	eofile = false;
 
-	clkname = nmz->lookup("CLK");
+	clkname = nmz->lookup("CLOCK");
 	swtchname = nmz->lookup("SWITCH");
 	andname = nmz->lookup("AND");
     nandname = nmz->lookup("NAND");
@@ -38,11 +38,11 @@ scanner::scanner(names* names_mod, const char* defname)
 void scanner::getch()
 {
 	eofile = (!inf.get(curch));
-	c_count ++;
-	if (curch == '\n') {
-		line++;
-		c_count = 0;
-	}
+  if (curch == '\n') {
+    line++;
+    c_count = 0;
+    return;
+  } else c_count ++;
 }
 
 void scanner::skipspaces()
@@ -125,13 +125,47 @@ void scanner::getsymbol(symbol& s, name& id, int& num)
 					}
 				}
 			}else {
-				switch(curch) {
-					case ';': s=semicol; break;
-					case '.': s=dotsym; break;
-					default: s=badsym; break;
-				}
+                if (curch == '-') {
+                    getch();
+                    if (curch == '>') {
+                        s = arrowsym;
+                    } else {
+                        s = badsym;
+                    }
+                } else {
+                    switch(curch) {
+                        case ';': s=semicol; break;
+                        case '.': s=dotsym; break;
+                        default: s=badsym; break;
+                    }
+                }
 				getch();
 			}
 		}
 	}
+}
+
+void scanner::reporterror()
+{
+  string line_str;
+  string out_str = "";
+  string report_str = "";
+  int counter;
+  
+  int pos = inf.tellg(); // store current positon
+  inf.seekg(0, inf.beg); // go to the beginning of the file
+  
+  for (counter = 0; counter <= line; counter ++){
+    getline(inf, line_str);
+  }
+  inf.seekg(pos, inf.beg); // return to position before line is read
+
+  for (counter= 0; counter < c_count-1; counter++){
+    out_str += line_str[counter];
+    report_str += ' ';
+  }
+  report_str[c_count-2] = '^';
+  cout << "Line: " << line << " Character: " << c_count << endl;
+  cout << out_str << endl;
+  cout << report_str << endl;
 }

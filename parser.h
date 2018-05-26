@@ -8,9 +8,20 @@
 #include "devices.h"
 #include "monitor.h"
 */
+#include <exception>
 
 
 using namespace std;
+
+class parser_exception : public std::exception {
+    const char* info;
+    
+public:
+    parser_exception(const char* info_) :
+    info (info_){
+    }
+    const char* get_info() const { return info; }
+};
 
 class parser {
   /*
@@ -25,6 +36,8 @@ class parser {
   scanner::symbol cursym;
   name curid;
   int curnum;
+  name devid; // used for storing the full output pin description
+  void generators(void);
   void generator(void);
   void devs(void);
   void dev(void);
@@ -32,6 +45,8 @@ class parser {
   void dtype(void);
   void Xor(void);
   void connections(void);
+  void output(void);
+  void input(void);
   void monitors(void);
   void error(void);
   void checkendsym(void);

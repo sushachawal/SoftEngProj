@@ -34,7 +34,7 @@ public:
 	int c_count; // character counter, reset every line
 
 	typedef enum {gensym, logsym, dtypesym, xorsym, consym, monsym, 
-		namesym, numsym, eofsym, semicol, dotsym, badsym} symbol;
+		namesym, numsym, eofsym, semicol, dotsym, arrowsym, badsym} symbol;
 		
 	// this is the constructor of the scanner class
 	scanner(names* names_mod,     // pointer to names class, so scanner can use it
@@ -49,7 +49,7 @@ public:
 	void getsymbol(symbol& s, // the sort of symbol read from the file
 				   name&  id, // return the name id here if it is a name
 				   int& num); // return the value here if it is a number
-				   
+  void reporterror(); // report location of the error
 };
 
 #endif /* scanner_h */
