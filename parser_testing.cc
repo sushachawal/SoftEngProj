@@ -28,7 +28,7 @@ int main(int argc, char **argv){
   
   bool okprsr;
   bool oknetz;
-  okprsr = prsr->readin();
+  prsr->readin(okprsr);
   netz->checknetwork(oknetz);
   cout << "File read in?: " << okprsr << endl;
   cout << "Everything connected?: " << oknetz << endl;

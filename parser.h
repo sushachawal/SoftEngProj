@@ -65,7 +65,7 @@ class parser {
 
 
  public:
-  bool readin ();
+  void readin (bool &ok);
     /* Reads the definition of the logic system and builds the             */
     /* corresponding internal representation via calls to the 'Network'    */
     /* module and the 'Devices' module.                                    */

@@ -7,11 +7,10 @@ using namespace std;
 /* The parser for the circuit definition files */
 
 
-bool parser::readin (void)
+void parser::readin (bool &ok)
 {
   stage = 1;
   parsed = false;
-  eofile = false;
   errorcount = 0;
   smz->getsymbol(cursym, curid, curnum); // gets first symbol. makes initialisation compatable with error recovery.
   while(!parsed){
@@ -25,15 +24,15 @@ bool parser::readin (void)
       recover();
     }
   }
-  
-  return eofile;
+  if (errorcount == 0){
+    ok = true;
+  } else ok = false;
 }
 
 void parser::begin(int stage){
   switch(stage){
     case(-1):
       parsed = true;
-      eofile = true;
       break;
     case(-2):
       cout << "End of file reached before semi-colon detected." << endl;
@@ -45,25 +44,21 @@ void parser::begin(int stage){
       connections();
       monitors();
       parsed = true;
-      eofile = true;
       break;
     case(2):
       devs();
       connections();
       monitors();
       parsed = true;
-      eofile = true;
       break;
     case(3):
       connections();
       monitors();
       parsed = true;
-      eofile = true;
       break;
     case(4):
       monitors();
       parsed = true;
-      eofile = true;
       break;
     default: parser_exception("Error: invalid stage");
       break;

@@ -159,8 +159,9 @@ void network::makeconnection (name idev, name inp, name odev, name outp, bool& o
     o = findoutput (dout, outp);
     i = findinput (din, inp);
     ok = ((o != NULL) && (i != NULL));
-    if (ok)
+    if (ok) {
       i->connect = o;
+    }
   }
 }
 
