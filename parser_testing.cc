@@ -1,6 +1,7 @@
 #include "parser.h"
 #include "names.h"
 #include "scanner.h"
+#include "userint.h"
 
 using namespace std;
 
@@ -24,10 +25,17 @@ int main(int argc, char **argv){
   mmz = new monitor(nmz, netz);
   smz = new scanner(nmz, argv[1]);
   prsr = new parser(netz, dmz, mmz, smz);
-  cout << prsr -> readin() << endl;
   
-  devlink device_list = netz->devicelist();
-  bool ok;
-  netz->checknetwork(ok);
-  cout << ok << endl;
+  bool okprsr;
+  bool oknetz;
+  okprsr = prsr->readin();
+  netz->checknetwork(oknetz);
+  cout << "File read in?: " << okprsr << endl;
+  cout << "Everything connected?: " << oknetz << endl;
+  
+  // Construct the text-based interface
+  userint umz(nmz, dmz, mmz);
+  umz.userinterface();
+  
+  return 0;
 }
