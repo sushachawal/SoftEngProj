@@ -166,8 +166,7 @@ void scanner::reporterror()
   inf.seekg(0, inf.beg); // go to the beginning of the file
   
   for (counter = 0; counter <= line; counter ++){
-    if(!getline(inf, line_str)){
-    }
+    if(!getline(inf, line_str));
   }
   inf.seekg(pos, inf.beg); // return to position before line is read
 

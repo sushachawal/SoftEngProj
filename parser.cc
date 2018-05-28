@@ -52,6 +52,7 @@ void parser::begin(int stage){
       parsed = true;
       break;
     case(1):
+	  cout << "\033[1;31m"<< to_string(cursym) << "\033[0m\n" << endl;
       generators();
       devs();
       connections();
@@ -78,10 +79,11 @@ void parser::begin(int stage){
   }
 }
 
+//TODO: No valid recovery option after badsym!
 void parser::recover(void){
   while(cursym != semicol && cursym != eofsym){
     smz->getsymbol(cursym, curid, curnum);
-  }
+  } //Keep getting symbols until either a semi colon or end of file.
   if(cursym == eofsym){
     stage = -2;
   } else{
