@@ -87,16 +87,16 @@ void scanner::getnumber(int& num)
 void scanner::getsymbol(symbol& s, name& id, int& num)
 {
 	skipspaces();
-	if (eofile) {
+	if (eofile) {// end of file:
 		s = eofsym;
 	}
 	else {
-		if (isdigit(curch)) { // number
+		if (isdigit(curch)) { // number:
 			s=numsym;
 			getnumber(num);
 		}
 		else {
-			if (isalpha(curch)) { // name
+			if (isalpha(curch)) { // name or keyword:
 				getname(id);
 				if (id == clkname || id == swtchname){
 					s=gensym;
@@ -135,7 +135,7 @@ void scanner::getsymbol(symbol& s, name& id, int& num)
             }
 					}
 				}
-			}else {
+			}else { //Neither a name nor a number:
                 if (curch == '-') {
                     getch();
                     if (curch == '>') {
@@ -158,13 +158,14 @@ void scanner::getsymbol(symbol& s, name& id, int& num)
 
 void scanner::reporterror()
 {
+	//cout << "Error starts at:" << int(curch) << endl;
   string line_str;
   string report_str = "";
   int counter;
-  
+
   int pos = inf.tellg(); // store current positon
   inf.seekg(0, inf.beg); // go to the beginning of the file
-  
+
   for (counter = 0; counter <= line; counter ++){
     if(!getline(inf, line_str));
   }
@@ -177,4 +178,5 @@ void scanner::reporterror()
   cout << endl << "Line: " << line << " Character: " << c_count << endl;
   cout << line_str << endl;
   cout << report_str << endl;
+	//cout << "Character starting from last error is:" << curch << endl;
 }
