@@ -65,11 +65,22 @@ void MyGLCanvas::Render(wxString example_text, int cycles)
 
   } else { // draw an artificial trace
 
-    glColor3f(0.0, 1.0, 0.0);
+    glColor3f(1.0, 0.0, 0.0);
     glBegin(GL_LINE_STRIP);
-    for (i=0; i<5; i++) {
+    for (i=0; i<10; i++) {
       if (i%2) y = 10.0;
       else y = 30.0;
+      glVertex2f(20*i+10.0, y); 
+      glVertex2f(20*i+30.0, y);
+    }
+    glEnd();
+    
+    
+    glColor3f(0.0, 1.0, 0.0);
+    glBegin(GL_LINE_STRIP);
+    for (i=0; i<10; i++) {
+      if (i%2) y = 50.0;
+      else y = 70.0;
       glVertex2f(20*i+10.0, y); 
       glVertex2f(20*i+30.0, y);
     }
@@ -121,7 +132,7 @@ void MyGLCanvas::OnPaint(wxPaintEvent& event)
 void MyGLCanvas::OnSize(wxSizeEvent& event)
   // Event handler for when the canvas is resized
 {
-  init = false;; // this will force the viewport and projection matrices to be reconfigured on the next paint
+  init = false; // this will force the viewport and projection matrices to be reconfigured on the next paint
 }
 
 void MyGLCanvas::OnMouse(wxMouseEvent& event)
@@ -168,6 +179,7 @@ BEGIN_EVENT_TABLE(MyFrame, wxFrame)
   EVT_MENU(wxID_EXIT, MyFrame::OnExit)
   EVT_MENU(wxID_ABOUT, MyFrame::OnAbout)
   EVT_BUTTON(MY_BUTTON_ID, MyFrame::OnButton)
+  EVT_BUTTON(MY_BUTTON_ID2, MyFrame::OnButton2)
   EVT_SPINCTRL(MY_SPINCNTRL_ID, MyFrame::OnSpin)
   EVT_TEXT_ENTER(MY_TEXTCTRL_ID, MyFrame::OnText)
 END_EVENT_TABLE()
@@ -194,6 +206,31 @@ MyFrame::MyFrame(wxWindow *parent, const wxString& title, const wxPoint& pos, co
   fileMenu->Append(wxID_EXIT, "&Quit");
   wxMenuBar *menuBar = new wxMenuBar;
   menuBar->Append(fileMenu, "&File");
+  
+  //My code starts here------------------------------------------------------
+  wxMenu *monitorMenu = new wxMenu;
+  int Sig_num = 100;
+  int MY_SIGNAL_ID[Sig_num];
+  for(int i = 0; i< Sig_num; i++){
+	  MY_SIGNAL_ID[i] = MY_BUTTON_ID2 + i + 1;
+	  monitorMenu->AppendCheckItem(MY_SIGNAL_ID[i], "&Signal");
+  }
+  menuBar->Append(monitorMenu, "&Monitors");
+  
+  wxMenu *switchMenu = new wxMenu;
+  //int MY_SWITCH_ID = MY_BUTTON_ID2 + 200;
+  //switchMenu->AppendCheckItem(MY_SWITCH_ID, "&Switch");
+  
+  int Switch_num = 10;
+  int MY_SWITCH_ID[Switch_num];
+  for(int i = 0; i< Switch_num; i++){
+	  MY_SWITCH_ID[i] = MY_BUTTON_ID2 + i + 200;
+	  switchMenu->AppendCheckItem(MY_SWITCH_ID[i], "&Switch is on");
+  }
+  
+  menuBar->Append(switchMenu, "&Switches");
+  
+  //My code ends here--------------------------------------------------------
   SetMenuBar(menuBar);
 
   wxBoxSizer *topsizer = new wxBoxSizer(wxHORIZONTAL);
@@ -202,15 +239,17 @@ MyFrame::MyFrame(wxWindow *parent, const wxString& title, const wxPoint& pos, co
 
   wxBoxSizer *button_sizer = new wxBoxSizer(wxVERTICAL);
   button_sizer->Add(new wxButton(this, MY_BUTTON_ID, "Run"), 0, wxALL, 10);
+  button_sizer->Add(new wxButton(this, MY_BUTTON_ID2, "Continue"), 0, wxALL, 10);
   button_sizer->Add(new wxStaticText(this, wxID_ANY, "Cycles"), 0, wxTOP|wxLEFT|wxRIGHT, 10);
   spin = new wxSpinCtrl(this, MY_SPINCNTRL_ID, wxString("10"));
   button_sizer->Add(spin, 0 , wxALL, 10);
-
+  
   button_sizer->Add(new wxTextCtrl(this, MY_TEXTCTRL_ID, "", wxDefaultPosition, wxDefaultSize, wxTE_PROCESS_ENTER), 0 , wxALL, 10);
   topsizer->Add(button_sizer, 0, wxALIGN_CENTER);
 
   SetSizeHints(400, 400);
   SetSizer(topsizer);
+  
 }
 
 void MyFrame::OnExit(wxCommandEvent &event)
@@ -226,6 +265,7 @@ void MyFrame::OnAbout(wxCommandEvent &event)
   about.ShowModal();
 }
 
+
 void MyFrame::OnButton(wxCommandEvent &event)
   // Event handler for the push button
 {
@@ -236,6 +276,18 @@ void MyFrame::OnButton(wxCommandEvent &event)
   mmz->resetmonitor ();
   runnetwork(spin->GetValue());
   canvas->Render("Run button pressed", cyclescompleted);
+}
+
+void MyFrame::OnButton2(wxCommandEvent &event)
+  // Event handler for the push button 2
+{
+  int n, ncycles;
+
+  cyclescompleted = 0;
+  dmz->initdevices ();
+  mmz->resetmonitor ();
+  runnetwork(spin->GetValue());
+  canvas->Render("Continue button pressed", cyclescompleted);
 }
 
 void MyFrame::OnSpin(wxSpinEvent &event)
@@ -255,6 +307,7 @@ void MyFrame::OnText(wxCommandEvent &event)
   text.Printf("New text entered %s", event.GetString().c_str());
   canvas->Render(text);
 }
+
 
 void MyFrame::runnetwork(int ncycles)
   // Function to run the network, derived from corresponding function in userint.cc

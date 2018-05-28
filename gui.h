@@ -9,10 +9,12 @@
 #include "devices.h"
 #include "monitor.h"
 
-enum { 
+enum MyEnum{
   MY_SPINCNTRL_ID = wxID_HIGHEST + 1,
   MY_TEXTCTRL_ID,
   MY_BUTTON_ID,
+  MY_BUTTON_ID2,
+  MY_MAX_ID = wxID_HIGHEST + 1000,
 }; // widget identifiers
 
 class MyGLCanvas;
@@ -34,8 +36,10 @@ class MyFrame: public wxFrame
   void OnExit(wxCommandEvent& event);     // event handler for exit menu item
   void OnAbout(wxCommandEvent& event);    // event handler for about menu item
   void OnButton(wxCommandEvent& event);   // event handler for push button
+  void OnButton2(wxCommandEvent& event);  // event handler for push button 2
   void OnSpin(wxSpinEvent& event);        // event handler for spin control
   void OnText(wxCommandEvent& event);     // event handler for text entry field
+  void OnCheck(wxCommandEvent& event);    // event handler for checkbox
   DECLARE_EVENT_TABLE()
 };
     
