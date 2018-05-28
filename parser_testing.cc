@@ -34,8 +34,10 @@ int main(int argc, char **argv){
   cout << "Everything connected?: " << oknetz << endl;
   
   // Construct the text-based interface
-  userint umz(nmz, dmz, mmz);
-  umz.userinterface();
-  
+  if (okprsr && oknetz){
+		userint umz(nmz, dmz, mmz);
+		umz.userinterface();
+	}
+		
   return 0;
 }

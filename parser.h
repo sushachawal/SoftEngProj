@@ -13,12 +13,10 @@ using namespace std;
 
 class parser_exception : public std::exception {
   const char* info;
-  int stage;
     
 public:
   parser_exception(const char* info_) :
-  info (info_),
-  stage (-1){
+  info (info_){
   }
   
   const char* get_info() const {
