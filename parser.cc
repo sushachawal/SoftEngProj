@@ -1,3 +1,5 @@
+
+
 #include <iostream>
 #include "parser.h"
 #include <exception>
@@ -6,8 +8,19 @@ using namespace std;
 
 /* The parser for the circuit definition files */
 
-
-void parser::readin (bool &ok)
+/***********************************************************************
+ *
+ * Function to be called from logicsim.cc. Interprets the .txt file
+ * using the EBNF syntax specified for the logic circuit and returns
+ * the success or failure of parsing.
+ * 
+ * @param NONE
+ * 
+ * @return bool true if the parsing was successful without any syntax
+ * or semantic errors and false if there were some errors.
+ * 
+ */
+bool parser::readin (void)
 {
   stage = 1;
   parsed = false;
@@ -25,8 +38,8 @@ void parser::readin (bool &ok)
     }
   }
   if (errorcount == 0){
-    ok = true;
-  } else ok = false;
+    return true;
+  } else return false;
 }
 
 void parser::begin(int stage){
