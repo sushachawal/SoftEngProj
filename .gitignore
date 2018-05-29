@@ -4,3 +4,6 @@
 *.a
 logsim
 guitest
+parser_testing
+scanner_testing
+*.dSYM
