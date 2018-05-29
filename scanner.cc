@@ -158,7 +158,6 @@ void scanner::getsymbol(symbol& s, name& id, int& num)
 
 void scanner::reporterror()
 {
-	//cout << "Error starts at:" << int(curch) << endl;
   string line_str;
   string report_str = "";
   int counter;
@@ -169,7 +168,7 @@ void scanner::reporterror()
   for (counter = 0; counter <= line; counter ++){
     if(!getline(inf, line_str));
   }
-  inf.seekg(pos, inf.beg); // return to position before line is read
+  inf.seekg(pos-1, inf.beg); // return to position before line is read
 
   for (counter= 0; counter < c_count-1; counter++){
     report_str += ' ';
@@ -178,5 +177,4 @@ void scanner::reporterror()
   cout << endl << "Line: " << line << " Character: " << c_count << endl;
   cout << line_str << endl;
   cout << report_str << endl;
-	//cout << "Character starting from last error is:" << curch << endl;
 }
