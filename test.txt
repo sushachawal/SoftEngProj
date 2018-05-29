@@ -1,4 +1,7 @@
-CLOCK CK 1;
+CLOCK CK 1; % TEST COMMENT
+% BLAH BLAH BLAH BLAH
+%% Miltiline comment here
+we go how will it do %%
 SWITCH SW 0;
 DTYPE A;
 DTYPE B;

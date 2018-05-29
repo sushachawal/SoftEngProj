@@ -42,6 +42,7 @@ class parser {
   int errorcount; // counts the number of errors
   bool parsed; // true when file is parsed
   bool eofile; // true when end of file is reached
+  bool oknetz; // true when all inputs in the network are connected
   void generators(void);
   void generator(void);
   void devs(void);

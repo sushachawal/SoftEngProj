@@ -21,7 +21,6 @@ scanner::scanner(names* names_mod, const char* defname)
 	norname = nmz->lookup("NOR");
 	dtypename = nmz->lookup("DTYPE");
 	xorname = nmz->lookup("XOR");
-	connectname = nmz->lookup("CONNECT");
 	monitorname = nmz->lookup("MONITOR");
 
 	inf.open(defname);
@@ -45,6 +44,23 @@ void scanner::skipspaces()
     if (eofile){
       break;
     }
+	}
+	if (curch == '%') {
+		getch();
+		if (curch == '%') {
+			while(!eofile){
+				getch();
+				if (curch == '%') {
+					getch();
+					if (curch == '%') break;
+				}
+			}
+		} else {
+			while (curch != '\n' && !eofile) {
+				getch();
+			}	
+		}
+		skipspaces();	
 	}
 }
 
@@ -101,35 +117,31 @@ void scanner::getsymbol(symbol& s, name& id, int& num)
 					if (id == andname){
 						s = andsym;
 					} else {
-            if (id == nandname){
-              s = nandsym;
-            } else {
-              if (id == orname){
-                s = orsym;
-              } else {
-                if (id == norname){
-                  s = norsym;
-                } else {
-                  if (id == dtypename) {
-                    s = dtypesym;
-                  } else {
-                    if (id == xorname) {
-                      s = xorsym;
-                    } else {
-                      if (id == connectname) {
-                        s=consym;
-                      } else {
-                        if (id == monitorname) {
-                          s=monsym;
-                        } else {
-                          s=namesym; // not a keyword
-                        }
-                      }
-                    }
-                  }
-                }
-              }
-            }
+						if (id == nandname){
+						  s = nandsym;
+						} else {
+						  if (id == orname){
+							s = orsym;
+						  } else {
+								if (id == norname){
+									s = norsym;
+								} else {
+									if (id == dtypename) {
+									s = dtypesym;
+									} else {
+										if (id == xorname) {
+											s = xorsym;
+										} else {
+											if (id == monitorname) {
+												s=monsym;
+											} else {
+												s=namesym; // not a keyword
+											}
+										}
+									}
+								}
+						  }
+						}
 					}
 				}
 			}else { //Neither a name nor a number:
