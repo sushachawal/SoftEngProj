@@ -33,9 +33,6 @@ class scanner {
 	
 public:
 	names* nmz;
-
-	int line; // line counter
-	int c_count; // character counter, reset every line
 		
 	// this is the constructor of the scanner class
 	scanner(names* names_mod,     // pointer to names class, so scanner can use it
@@ -50,6 +47,7 @@ public:
 	void getsymbol(symbol& s, // the sort of symbol read from the file
 				   name&  id, // return the name id here if it is a name
 				   int& num); // return the value here if it is a number
+  bool checksemicol(); // checks if the next symbol is a semicolon. if not, return false.
   void reporterror(); // report location of the error
 };
 

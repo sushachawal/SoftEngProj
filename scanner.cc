@@ -9,8 +9,6 @@ using namespace std;
 
 scanner::scanner(names* names_mod, const char* defname)
 {
-	line = 0;
-	c_count = 0;
 
 	nmz = names_mod;
 	eofile = false;
@@ -38,10 +36,6 @@ scanner::scanner(names* names_mod, const char* defname)
 void scanner::getch()
 {
 	eofile = (!inf.get(curch));
-  if (curch == '\n') {
-    line++;
-    c_count = 0;
-  } else c_count ++;
 }
 
 void scanner::skipspaces()
@@ -159,19 +153,58 @@ void scanner::getsymbol(symbol& s, name& id, int& num)
 	}
 }
 
+bool scanner::checksemicol()
+{
+  int pos = inf.tellg();
+  skipspaces();
+  if (curch == ';') {
+    inf.seekg(pos, inf.beg); // return to position before semicol checked
+    return true;
+  }
+  else {
+    inf.seekg(pos, inf.beg); // return to position before semicol checked
+    return false;
+  }
+}
+
 void scanner::reporterror()
 {
 	//cout << "Error starts at:" << int(curch) << endl;
   string line_str;
   string report_str = "";
-  int counter;
+  int counter = 0;
+  int line = 0; // line counter
+  int c_count = 0; // character counter, reset every line
+  char c;
 
   int pos = inf.tellg(); // store current positon
-  inf.seekg(0, inf.beg); // go to the beginning of the file
 
-  for (counter = 0; counter <= line; counter ++){
-    if(!getline(inf, line_str));
+  inf.seekg(0, inf.beg); // go to the beginning of the file
+  
+  while(counter<pos){
+    inf.get(c);
+    if (c == '\n') {
+      line++;
+      c_count = 0;
+    } else c_count ++;
+    counter++;
   }
+
+  inf.seekg(0, inf.beg); // go to the beginning of the file
+  
+  if (c_count == 0){     // if error detected at the start of a line, mark error at the end of the previous line.
+    line --;
+    for (counter = 0; counter <= line; counter ++){
+      if(!getline(inf, line_str));
+    }
+    c_count = line_str.length() + 2;
+  }
+  else{
+    for (counter = 0; counter <= line; counter ++){
+      if(!getline(inf, line_str));
+    }
+  }
+  
   inf.seekg(pos, inf.beg); // return to position before line is read
 
   for (counter= 0; counter < c_count-1; counter++){

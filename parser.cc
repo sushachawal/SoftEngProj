@@ -32,7 +32,11 @@ bool parser::readin (void)
     }
     catch(parser_exception& e) {
       smz->reporterror();
-      cout << e.get_info() << endl;
+      cout << "\033[1;31m" << e.get_info() << "\033[0m\n" << endl;
+      if(errorcount == 0){
+        cout << "\033[1;31m" << "Network construction is terminated." << "\033[0m\n" << endl;
+      }
+      cout << endl;
       errorcount ++;
       recover();
     }
@@ -73,7 +77,7 @@ void parser::begin(int stage){
       monitors();
       parsed = true;
       break;
-    default: parser_exception("Error: invalid stage");
+    default: parser_exception("Error: failed to resume parsing.");
       break;
   }
 }
@@ -120,7 +124,7 @@ void parser::recover(void){
 void parser::generators(void){
   if(cursym == gensym) {
     generator();
-  } else throw parser_exception("Error: No generator found"); // begin in stage 2
+  } else throw parser_exception("Error: expected 'SWITCH'/'CLOCK'."); // begin in stage 2
   while (cursym == gensym) {
     generator();
   }
@@ -137,24 +141,24 @@ void parser::generator(void){
       smz->getsymbol(cursym, curid, curnum);
       if (cursym == numsym){                // Check numsym after namesym
         if(curnum > 0){                              // Check if number is valid
-          cout << "Making clock device ";
+          cout << "Making 'CLOCK' device ";
           smz->nmz->writename(curid);
           cout << endl;
           devid = curid;
           devnum = curnum;
           checkendsym();                                    // Don't make device if no semicol;
-          smz->getsymbol(cursym, curid, curnum);
           if(errorcount == 0){
             if(!netz->finddevice(devid)){
-              dmz->makedevice(aclock, devid, devnum, ok); // Make 'SWITCH' device
+              dmz->makedevice(aclock, devid, devnum, ok); // Make 'CLOCK' device
               if(!ok){
-                throw parser_exception("Error: failed to make 'SWITCH' device");
+                throw parser_exception("Error: failed to make 'CLOCK' device.");
               }
             } else throw parser_exception("Error: device already exists!");
           }
-        } else throw parser_exception("Error: CLK number must be greater than 0");
-      } else throw parser_exception("Error: expected number after device name");
-    } else throw parser_exception("Error: expected device name after 'CLK'");
+          smz->getsymbol(cursym, curid, curnum);
+        } else throw parser_exception("Error: 'CLOCK' frequency must be greater than 0.");
+      } else throw parser_exception("Error: 'CLOCK' frequency must be specified.");
+    } else throw parser_exception("Error: invalid device name. Device names may only contain letters or digits may not take the form of command words  'CLOCK', 'AND', 'MONITOR' etc.");
   }
   else if (curid == smz->nmz->lookup("SWITCH")) {
     smz->getsymbol(cursym, curid, curnum);
@@ -163,13 +167,12 @@ void parser::generator(void){
       smz->getsymbol(cursym, curid, curnum);
       if (cursym == numsym){
         if(curnum == 1 || curnum == 0){
-          cout << "Making switch device ";
+          cout << "Making 'SWITCH' device ";
           smz->nmz->writename(curid);
           cout << endl;
           devid = curid;
           devnum = curnum;
           checkendsym();                                    // Don't make device if no semicol;
-          smz->getsymbol(cursym, curid, curnum);
           if(errorcount == 0){
             if(!netz->finddevice(devid)){
               dmz->makedevice(aswitch, devid, devnum, ok); // Make 'SWITCH' device
@@ -178,16 +181,17 @@ void parser::generator(void){
               }
             } else throw parser_exception("Error: device already exists!");
           }
-        } else throw parser_exception("Error: initial state takes values 0 or 1");
-      } else throw parser_exception("Error: expected number after device name");
-    } else throw parser_exception("Error: expected device name after 'SWITCH'");
+          smz->getsymbol(cursym, curid, curnum);
+        } else throw parser_exception("Error: 'SWITCH' initial state may only take values '1' or '0'.");
+      } else throw parser_exception("Error: 'SWITCH' initial state must be specified as either '1' or '0'.");
+    } else throw parser_exception("Error: Error: invalid device name. Device names may only contain letters or digits may not take the form of command words  'CLOCK', 'AND', 'MONITOR' etc.");
   } else throw parser_exception("Error: this should never happen");
 }
 
 void parser::devs(){
   if(cursym == andsym||cursym == nandsym||cursym == orsym||cursym == norsym||cursym == dtypesym||cursym == xorsym) {     // Must be at least one device
 	  dev();
-  } else throw parser_exception("Error: expected device type");
+  } else throw parser_exception("Error: at least one valid device type must be defined. Valid device types are: 'AND', 'NAND', 'OR', 'NOR', 'DTYPE', 'XOR'.");
 
   while(cursym == andsym||cursym == nandsym||cursym == orsym||cursym == norsym||cursym == dtypesym||cursym == xorsym){   // No limit on num. devices
     dev();
@@ -222,25 +226,23 @@ void parser::logic(devicekind dkind){
   if(cursym == namesym){                                  // Check namesym after logsym
     smz->getsymbol(cursym, curid, curnum);
     if (cursym == numsym){                                // Check numsym after namesym
-      if(curnum <=16 && curnum > 0){                      // Check valid input range
-        cout << "Making logic device ";
-        smz->nmz->writename(curid);
-        devid = curid;
-        devnum = curnum;
-        cout << endl;
-        checkendsym();
-        smz->getsymbol(cursym, curid, curnum);
-        if(errorcount == 0){
-          if(!netz->finddevice(devid)){
-            dmz->makedevice(dkind, devid, devnum, ok);
-            if(!ok){
-              throw parser_exception("Error: failed to make logic device");
-            }
-          } else throw parser_exception("Error: device already exists!");
-        }
-      }else throw parser_exception("Error: number of inputs not in range 1-16"); // error();
-    }else throw parser_exception("Error: expected number after device name"); // error();
-  }else throw parser_exception("Error: expected device name after 'AND', 'NAND', 'OR', 'NOR'"); // error();
+      cout << "Making LOGIC device ";
+      smz->nmz->writename(curid);
+      devid = curid;
+      devnum = curnum;
+      cout << endl;
+      checkendsym();
+      if(errorcount == 0){
+        if(!netz->finddevice(devid)){
+          dmz->makedevice(dkind, devid, devnum, ok);
+          if(!ok){
+            throw parser_exception("Error: the number of inputs may not exceed 16.");
+          }
+        } else throw parser_exception("Error: device already exists!");
+      }
+      smz->getsymbol(cursym, curid, curnum);
+    }else throw parser_exception("Error: number of inputs must be specified."); // error();
+  }else throw parser_exception("Error: invalid device name. Device names may only contain letters or digits may not take the form of command words  'CLOCK', 'AND', 'MONITOR' etc."); // error();
 }
 
 void parser::dtype_(void){
@@ -249,21 +251,21 @@ void parser::dtype_(void){
 
   smz->getsymbol(cursym, curid, curnum);
   if(cursym == namesym){
-    cout << "Making dtype device ";
+    cout << "Making 'DTYPE' device ";
     smz->nmz->writename(curid);
     devid = curid;
     cout << endl;
     checkendsym();
-    smz->getsymbol(cursym, curid, curnum);
     if(errorcount == 0){
       if(!netz->finddevice(devid)){
         dmz->makedevice(dtype, devid, blankname, ok);
         if(!ok){
-          throw parser_exception("Error: failed to make dtype device");
+          throw parser_exception("Error: failed to make 'DTYPE' device.");
         }
       } else throw parser_exception("Error: device already exists!");
     }
-  } else throw parser_exception("Error: expected device name after 'DTYPE'");
+    smz->getsymbol(cursym, curid, curnum);
+  } else throw parser_exception("Error: invalid device name. Device names may only contain letters or digits may not take the form of command words  'CLOCK', 'AND', 'MONITOR' etc.");
 }
 
 void parser::Xor(void){
@@ -273,22 +275,22 @@ void parser::Xor(void){
 
   smz->getsymbol(cursym, curid, curnum);
   if(cursym == namesym){
-    cout << "Making xor device ";
+    cout << "Making 'XOR' device ";
     smz->nmz->writename(curid);
     devid = curid;
     devnum = curnum;
     cout << endl;
     checkendsym();
-    smz->getsymbol(cursym, curid, curnum);
     if(errorcount == 0){
       if(!netz->finddevice(devid)){
         dmz->makedevice(xorgate, devid, blankname, ok);
         if(!ok){
-          throw parser_exception("Error: failed to make xor device");
+          throw parser_exception("Error: failed to make 'XOR'' device");
         }
       } else throw parser_exception("Error: device already exists!");
     }
-  } else throw parser_exception("Error: expected device name after 'XOR'");
+    smz->getsymbol(cursym, curid, curnum);
+  } else throw parser_exception("Error: invalid device name. Device names may only contain letters or digits may not take the form of command words  'CLOCK', 'AND', 'MONITOR' etc.");
 }
 
 void parser::connections(void){
@@ -296,7 +298,6 @@ void parser::connections(void){
   bool ok;
 
   while(cursym == namesym){
-    cout << "Connecting output ";
     outdev = curid;
     output(outdev, outsig);
     if(cursym == arrowsym){
@@ -306,14 +307,14 @@ void parser::connections(void){
       input(indev, insig);
       cout << endl;
       checkendsym();
-      smz->getsymbol(cursym, curid, curnum);
       if(errorcount == 0){
         netz->makeconnection(indev, insig, outdev, outsig, ok);
         if(!ok){
-          throw parser_exception("Error: connection failed");
+          throw parser_exception("Error: connection failed. Either the specified output or input pin does not exist.");
         }
       }
-    } else throw parser_exception("Error: expected '->' after output pin");
+      smz->getsymbol(cursym, curid, curnum);
+    } else throw parser_exception("Error: expected '->'.");
   }
 }
 
@@ -321,7 +322,7 @@ void parser::output(name outdev, name& outsig){
   devlink dev = netz->finddevice(outdev);
   outplink olink;
 
-  if(dev){                                              // Check device exists
+  if(dev || errorcount != 0){                           // Check device exists, or if error has occured.
     smz->getsymbol(cursym, curid, curnum);
     if(cursym == dotsym){                               // if dotsym, must be dtype
       smz->getsymbol(cursym, curid, curnum);
@@ -330,23 +331,24 @@ void parser::output(name outdev, name& outsig){
           olink = netz->findoutput(dev, curid);
           if(olink){
             outsig = curid;
-          } else throw parser_exception("Error: output pin does not exist");
+          } else throw parser_exception("Error: specified output pin does not exist.");
         }
+        cout << "Connecting output ";
         smz->nmz->writename(outdev);
         cout << ".";
         smz->nmz->writename(curid);
         smz->getsymbol(cursym, curid, curnum);
-      } else throw parser_exception("Error: invalid output pin");
+      } else throw parser_exception("Error: specified output pin does not exist.");
     } else {
       if(errorcount == 0){
         olink = netz->findoutput(dev, blankname);                 // Check output pin exists
         if(olink){
           outsig = blankname;
-        } else throw parser_exception("Error: output pin does not exist");
+        } else throw parser_exception("Error: specified output pin does not exist");
       }
       smz->nmz->writename(outdev);
     }
-  } else throw parser_exception("Error: device does not exist");
+  } else throw parser_exception("Error: device does not exist.");
 }
 
 void parser::input(name indev, name& insig){
@@ -354,7 +356,7 @@ void parser::input(name indev, name& insig){
   inplink ilink;
 
   if(cursym == namesym){
-    if(dev){                                                // Check device exists
+    if(dev || errorcount != 0){                             // Check device exists or if errorcount != 0
       smz->getsymbol(cursym, curid, curnum);
       if(cursym == dotsym){
         smz->getsymbol(cursym, curid, curnum);
@@ -363,15 +365,15 @@ void parser::input(name indev, name& insig){
             ilink = netz->findinput(dev, curid);
             if(ilink){
               insig = curid;
-            } else throw parser_exception("Error: input pin does not exist");
+            } else throw parser_exception("Error: specified input pin does not exist.");
           }
           smz->nmz->writename(indev);
           cout << ".";
           smz->nmz->writename(curid);
-        } else throw parser_exception("Error: invalid input pin");
+        } else throw parser_exception("Error: specified input pin does not exist.");
       } else throw parser_exception("Error: expected '.' after device name");
     } else throw parser_exception("Error: device does not exist");
-  } else throw parser_exception("Error: expected input pin after '->'");
+  } else throw parser_exception("Error: specified input pin does not exist.");
 }
 
 void parser::monitors(void){
@@ -395,30 +397,30 @@ void parser::monitors(void){
             if(errorcount == 0){
               mmz->makemonitor(devid, curid, ok);
               if(!ok){
-                throw parser_exception("Error: could not monitor device (currently only monitors output pins)");
+                throw parser_exception("Error: device does not exist.");
               }
             }
             smz->getsymbol(cursym, curid, curnum);
-          }else throw parser_exception("Error: invalid output/input pin");
+          }else throw parser_exception("Error: can only monitor existing output/input pins.");
         } else if(cursym == namesym || cursym == semicol){         // namesym/semicol sym -> monitor single output device.
           cout << " ";
           if(errorcount == 0){
             mmz->makemonitor(devid, blankname, ok);
             if(!ok){
-              throw parser_exception("Error: could not monitor device");
+              throw parser_exception("Error: device does not exist.");
             }
           }
         } else {
-          throw parser_exception("Error: expected '.' or output/input pin");
+          throw parser_exception("Error: specified output/input pin does not exist.");
         }
-      } else throw parser_exception("Error: expected output/input pin");
+      } else throw parser_exception("Error: specified output/input pin does not exist.");
     }
     smz->getsymbol(cursym, curid, curnum); // Should be eofsym
     if(cursym != eofsym){
-      throw parser_exception("Error: end of file expected");
+      throw parser_exception("Error: end of file expected.");
     }
     cout << endl;
-  } else throw parser_exception("Error: expected 'MONITOR'");
+  }
 }
 
 void parser::error(void){
@@ -427,9 +429,11 @@ void parser::error(void){
 }
 
 void parser::checkendsym(void){
-  smz->getsymbol(cursym, curid, curnum);
-  if(cursym == semicol)return;
-  throw parser_exception("Error: expected ';'"); // error();
+  if(smz->checksemicol()){
+    smz->getsymbol(cursym, curid, curnum);
+    return;
+  }
+  throw parser_exception("Error: expected ';'."); // error();
 }
 
 parser::parser (network* network_mod, devices* devices_mod,
