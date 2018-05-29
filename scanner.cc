@@ -165,6 +165,9 @@ void scanner::reporterror()
   string report_str = "";
   int counter;
 
+	//TODO: Can put c_count and line count here! This decouples it from the normal
+	// scanning to make the code more versatile.
+
   int pos = inf.tellg(); // store current positon
   inf.seekg(0, inf.beg); // go to the beginning of the file
 
