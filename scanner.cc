@@ -48,6 +48,9 @@ void scanner::skipspaces()
 {
 	while (isspace(curch)) {
 		getch();
+    if (eofile){
+      break;
+    }
 	}
 }
 
