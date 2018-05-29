@@ -8,6 +8,7 @@
 #include "names.h"
 #include "devices.h"
 #include "monitor.h"
+#include "network.h"
 
 enum MyEnum{
   MY_SPINCNTRL_ID = wxID_HIGHEST + 1,
@@ -23,7 +24,7 @@ class MyFrame: public wxFrame
 {
  public:
   MyFrame(wxWindow *parent, const wxString& title, const wxPoint& pos, const wxSize& size, 
-	  names *names_mod = NULL, devices *devices_mod = NULL, monitor *monitor_mod = NULL, 
+	  names *names_mod = NULL, network *network_mod = NULL, devices *devices_mod = NULL, monitor *monitor_mod = NULL, 
 	  long style = wxDEFAULT_FRAME_STYLE); // constructor
  private:
   MyGLCanvas *canvas;                     // OpenGL drawing area widget to draw traces
@@ -31,6 +32,7 @@ class MyFrame: public wxFrame
   names *nmz;                             // pointer to names class
   devices *dmz;                           // pointer to devices class
   monitor *mmz;                           // pointer to monitor class
+  network *netz;                          // pointer to network class
   int cyclescompleted;                    // how many simulation cycles have been completed
   void runnetwork(int ncycles);           // function to run the logic network
   void OnExit(wxCommandEvent& event);     // event handler for exit menu item

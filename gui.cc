@@ -65,22 +65,11 @@ void MyGLCanvas::Render(wxString example_text, int cycles)
 
   } else { // draw an artificial trace
 
-    glColor3f(1.0, 0.0, 0.0);
+    glColor3f(1.0, 0.0, 1.0);
     glBegin(GL_LINE_STRIP);
     for (i=0; i<10; i++) {
       if (i%2) y = 10.0;
       else y = 30.0;
-      glVertex2f(20*i+10.0, y); 
-      glVertex2f(20*i+30.0, y);
-    }
-    glEnd();
-    
-    
-    glColor3f(0.0, 1.0, 0.0);
-    glBegin(GL_LINE_STRIP);
-    for (i=0; i<10; i++) {
-      if (i%2) y = 50.0;
-      else y = 70.0;
       glVertex2f(20*i+10.0, y); 
       glVertex2f(20*i+30.0, y);
     }
@@ -185,7 +174,7 @@ BEGIN_EVENT_TABLE(MyFrame, wxFrame)
 END_EVENT_TABLE()
   
 MyFrame::MyFrame(wxWindow *parent, const wxString& title, const wxPoint& pos, const wxSize& size,
-		 names *names_mod, devices *devices_mod, monitor *monitor_mod, long style):
+		 names *names_mod, network *network_mod, devices *devices_mod, monitor *monitor_mod, long style):
   wxFrame(parent, wxID_ANY, title, pos, size, style)
   // Constructor - initialises pointers to names, devices and monitor classes, lays out widgets
   // using sizers
@@ -194,10 +183,11 @@ MyFrame::MyFrame(wxWindow *parent, const wxString& title, const wxPoint& pos, co
 
   cyclescompleted = 0;
   nmz = names_mod;
+  netz = network_mod;
   dmz = devices_mod;
   mmz = monitor_mod;
-  if (nmz == NULL || dmz == NULL || mmz == NULL) {
-    cout << "Cannot operate GUI without names, devices and monitor classes" << endl;
+  if (nmz == NULL || netz ==NULL || dmz == NULL || mmz == NULL) {
+    cout << "Cannot operate GUI without names, network, devices and monitor classes" << endl;
     exit(1);
   }
 
@@ -209,11 +199,34 @@ MyFrame::MyFrame(wxWindow *parent, const wxString& title, const wxPoint& pos, co
   
   //My code starts here------------------------------------------------------
   wxMenu *monitorMenu = new wxMenu;
-  int Sig_num = 100;
+  int Sig_num = 30, gui_index=0, device_id, input_id, output_id;
+  string nameOfDevice, nameOfInput, nameOfOutput;
   int MY_SIGNAL_ID[Sig_num];
-  for(int i = 0; i< Sig_num; i++){
-	  MY_SIGNAL_ID[i] = MY_BUTTON_ID2 + i + 1;
-	  monitorMenu->AppendCheckItem(MY_SIGNAL_ID[i], "&Signal");
+  devlink d;
+  inplink i;
+  outplink o;
+  for (d = netz->devicelist(); d != NULL; d = d->next){
+	  device_id = d->id;
+	  nameOfDevice = nmz->getname(device_id);
+	  for(i = d->ilist; i!=NULL; i = i->next){
+		  {
+			input_id = i->id;
+			nameOfInput = nmz->getname(input_id);
+			MY_SIGNAL_ID[gui_index] = MY_BUTTON_ID2 + gui_index + 1;
+			monitorMenu->AppendCheckItem(MY_SIGNAL_ID[gui_index], nameOfDevice + "." +nameOfInput);
+			gui_index++;
+		  }
+	  }
+	  
+	  for(o = d->olist; o!=NULL; o = o->next){
+		  {
+			output_id = o->id;
+			nameOfOutput = nmz->getname(output_id);
+			MY_SIGNAL_ID[gui_index] = MY_BUTTON_ID2 + gui_index + 1;
+			monitorMenu->AppendCheckItem(MY_SIGNAL_ID[gui_index], nameOfDevice + "." +nameOfOutput);
+			gui_index++;
+		  }
+	  }
   }
   menuBar->Append(monitorMenu, "&Monitors");
   
@@ -267,7 +280,6 @@ void MyFrame::OnButton(wxCommandEvent &event)
   // Event handler for the push button
 {
   int n, ncycles;
-
   cyclescompleted = 0;
   dmz->initdevices ();
   mmz->resetmonitor ();
@@ -280,9 +292,8 @@ void MyFrame::OnButton2(wxCommandEvent &event)
 {
   int n, ncycles;
 
-  cyclescompleted = 0;
-  dmz->initdevices ();
-  mmz->resetmonitor ();
+  //cyclescompleted = 0;
+  //mmz->resetmonitor ();
   runnetwork(spin->GetValue());
   canvas->Render("Continue button pressed", cyclescompleted);
 }

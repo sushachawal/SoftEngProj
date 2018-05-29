@@ -13,11 +13,11 @@ bool MyApp::OnInit()
   dmz = new devices(nmz, netz);
   mmz = new monitor(nmz, netz);
   
-  bool ok = true;
-  dmz->makedevice(aswitch, 1, 1, ok);
-  dmz->makedevice(aswitch, 2, 1, ok);
-  devicekind k = dmz->devkind(2);
-  dmz->writedevice(k);
+  //~ bool ok = true;
+  //~ dmz->makedevice(aswitch, 1, 1, ok);
+  //~ dmz->makedevice(aswitch, 2, 1, ok);
+  //~ devicekind k = dmz->devkind(2);
+  //~ dmz->writedevice(k);
   
   
   // glutInit cannot cope with Unicode command line arguments, so we pass
