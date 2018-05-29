@@ -10,7 +10,8 @@ const int maxcycles = 50;        /* max number of cycles per run */
 
 struct moninfo {
   name devid;
-  outplink op;
+  outplink op = NULL;
+  inplink ip = NULL;                 // Allow for input pins to be monitored
 };
 struct monitortable {
   int used;
@@ -27,13 +28,14 @@ class monitor {
   signaltrace disp[maxmonitors]; 
 
  public:
-  void makemonitor (name dev, name outp, bool& ok);
-    /* Sets a monitor on the 'outp' output of device 'dev' by placing an   */
-    /* entry in the monitor table. 'ok' is set true if operation succeeds. */
+  void makemonitor (name dev, name pin, bool& ok);
+    /* Sets a monitor on the output/input 'pin' of device 'dev' by placing */
+    /* an entry in the monitor table. 'ok' is set true if operation        */
+    /* succeeds.                                                           */
  
-  void remmonitor (name dev, name outp, bool& ok);
-    /* Removes the monitor set the 'outp' output of device 'dev'. 'ok' is  */
-    /* set true if operation succeeds.                                     */
+  void remmonitor (name dev, name pin, bool& ok);
+    /* Removes the monitor set the output/input 'pin' of device 'dev'.     */
+    /* 'ok' is set true if operation succeeds.                             */
 
   int moncount (void);
     /* Returns number of signals currently monitored.                      */
@@ -45,7 +47,7 @@ class monitor {
     /* Access recorded signal trace, returns false if invalid monitor      */
     /* or cycle                                                            */
 
-  void getmonname (int n, name& dev, name& outp);
+  void getmonname (int n, name& dev, name& pin);
     /* Returns name of n'th monitor.                                       */
 
   void resetmonitor (void);

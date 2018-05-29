@@ -5,25 +5,40 @@ using namespace std;
 
 /***********************************************************************
  *
- * Sets a monitor on the 'outp' output of device 'dev' by placing an   
+ * Sets a monitor on the output/input 'pin' of device 'dev' by placing an   
  * entry in the monitor table. 'ok' is set true if operation succeeds. 
  *
  */
-void monitor::makemonitor (name dev, name outp, bool& ok)
+void monitor::makemonitor (name dev, name pin, bool& ok)
 {
   devlink d;
   outplink o;
+  inplink i;
   ok = (mtab.used < maxmonitors);
   if (ok) {
     d = netz->finddevice (dev);
     ok = (d != NULL);
     if (ok) {
-      o = netz->findoutput (d, outp);
-      ok = (o != NULL);
-      if (ok) {
-	mtab.sigs[mtab.used].devid = dev;
-	mtab.sigs[mtab.used].op = o;
-	(mtab.used)++;
+      i = netz->findinput(d, pin);
+      o = netz->findoutput (d, pin);
+      if (o != NULL){
+        mtab.sigs[mtab.used].devid = dev;
+        mtab.sigs[mtab.used].op = o;
+        (mtab.used)++;
+        ok = true;
+      } else if (i != NULL){
+        mtab.sigs[mtab.used].devid = dev;
+        mtab.sigs[mtab.used].ip = i;
+        (mtab.used)++;
+        ok = true;
+        /*
+        o = i->connect;
+        dev = i->outid;
+        mtab.sigs[mtab.used].devid = dev;
+        mtab.sigs[mtab.used].op = o;
+        (mtab.used)++;
+        ok = true;
+         */
       }
     }
   }
@@ -36,16 +51,24 @@ void monitor::makemonitor (name dev, name outp, bool& ok)
  * set true if operation succeeds.                                     
  *
  */
-void monitor::remmonitor (name dev, name outp, bool& ok)
+void monitor::remmonitor (name dev, name pin, bool& ok)
 {
   int i, j;
-  bool found;
+  bool found, found_dev, found_pin;
   ok = (mtab.used > 0);
   if (ok) {
     found = false;
-    for (i = 0; ((i < mtab.used) && (! found)); i++)
-      found = ((mtab.sigs[i].devid == dev) &&
-	       (mtab.sigs[i].op->id == outp));
+    found_dev = false;
+    found_pin = false;
+    for (i = 0; ((i < mtab.used) && (! found)); i++){
+      found_dev = ((mtab.sigs[i].devid == dev));
+      if (found_dev){
+        if (mtab.sigs[i].op){
+          found_pin = (mtab.sigs[i].op->id == pin);
+        } else found_pin = (mtab.sigs[i].ip->id == pin);
+      }
+      found = found_dev && found_pin;
+    }
     ok = found;
     if (found) {
       (mtab.used)--;
@@ -74,7 +97,10 @@ int monitor::moncount (void)
  */
 asignal monitor::getmonsignal (int n)
 {
-  return (mtab.sigs[n].op->sig);
+  if (mtab.sigs[n].op){
+    return mtab.sigs[n].op->sig;
+  }
+  else return(mtab.sigs[n].ip->connect->sig);
 }
 
 
@@ -83,10 +109,13 @@ asignal monitor::getmonsignal (int n)
  * Returns name of n'th monitor. 
  *
  */
-void monitor::getmonname (int n, name& dev, name& outp)
+void monitor::getmonname (int n, name& dev, name& pin)
 {
   dev = mtab.sigs[n].devid;
-  outp = mtab.sigs[n].op->id;
+  if (mtab.sigs[n].op){
+    pin = mtab.sigs[n].op->id;
+  }
+  else pin = mtab.sigs[n].ip->id;
 }
 
 
@@ -139,16 +168,16 @@ void monitor::displaysignals (void)
 {
   const int margin = 20;
   int n, i;
-  name dev, outp;
+  name dev, pin;
   int namesize;
   for (n = 0; n < moncount (); n++) {
-    getmonname (n, dev, outp);
+    getmonname (n, dev, pin);
     namesize = nmz->namelength (dev);
     nmz->writename (dev);
-    if (outp != blankname) {
+    if (pin != blankname) {
       cout << ".";
-      nmz->writename (outp);
-      namesize = namesize + nmz->namelength (outp) + 1;
+      nmz->writename (pin);
+      namesize = namesize + nmz->namelength (pin) + 1;
     }
     if ((margin - namesize) > 0) {
       for (i = 0; i < (margin - namesize - 1); i++)

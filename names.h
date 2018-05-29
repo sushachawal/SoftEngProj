@@ -2,6 +2,7 @@
 #define names_h
 
 #include <string>
+#include <unordered_map>
 
 using namespace std;
 
@@ -14,10 +15,15 @@ typedef string namestring;
 
 class names{
 
-  /* put stuff that the class uses internally here */
-
+private:
+  unordered_map<namestring, name> namestrtoname;
+  unordered_map<name, namestring> nametonamestr;
+  name count = 0; //Create a counter to ensure unique key/values.
 
 public:
+  namestring getname (name id);
+    /* Returns namestring given the name id                                */
+  
   name lookup (namestring str);
     /* Returns the internal representation of the name given in character  */
     /* form.  If the name is not already in the name table, it is          */
@@ -30,8 +36,11 @@ public:
 
   void writename (name id);
     /* Prints out the given name on the console                            */
+  
+  void printall ();
+    /* Print out all the names contained in the map                        */
 
-  int namelength (name id);
+  int namelength (name id);                                                
     /* Returns length ie number of characters in given name                */
 
   names (void);
