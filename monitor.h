@@ -26,7 +26,7 @@ class monitor {
   monitortable mtab;                 // table of monitored signals
   int cycles;                        // counts clock cycles
   signaltrace disp[maxmonitors]; 
-
+  
  public:
   void makemonitor (name dev, name pin, bool& ok);
     /* Sets a monitor on the output/input 'pin' of device 'dev' by placing */

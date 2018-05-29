@@ -28,6 +28,38 @@ MyGLCanvas::MyGLCanvas(wxWindow *parent, wxWindowID id, monitor* monitor_mod, na
   pan_y = 0;
   zoom = 1.0;
   cyclesdisplayed = -1;
+  GetClientSize(&w, &h);
+}
+
+void MyGLCanvas::DrawMonSig(float y, float gap, int monnum, int cyclesdisplayed)
+{
+  //Draw the axes:
+  float vert0 = y + 0.2*gap;
+  float vert1 = y + 0.8*gap;
+  float cycle_gap = 0.8*w/cyclesdisplayed;
+  glColor3f(0.0, 0.0, 0.0);
+  glBegin(GL_LINE_STRIP);
+  glVertex2f(0 + w*0.1, vert0);
+  glVertex2f(w - w*0.1, vert0);
+  glEnd();
+  glBegin(GL_LINE_STRIP);
+  glVertex2f(0 + w*0.1, vert0);
+  glVertex2f(0 + w*0.1, vert1);
+  glEnd();
+  glColor3f(1.0, 0.0, 0.0);
+  glBegin(GL_LINE_STRIP);
+  asignal s;
+  float vert;
+  for (int i=0; i<cyclesdisplayed; i++) {
+    if (mmz->getsignaltrace(monnum, i, s)) {
+      if (s==low) vert = vert0;
+      if (s==high) vert = vert0 + (vert1-vert0)*0.8;
+      glVertex2f(0 + w*0.1 + cycle_gap*i, vert); 
+      glVertex2f(0 + w*0.1 + cycle_gap*(i+1), vert);
+    }
+  }
+  glEnd();
+  
 }
 
 void MyGLCanvas::Render(wxString example_text, int cycles)
@@ -39,7 +71,14 @@ void MyGLCanvas::Render(wxString example_text, int cycles)
   float y;
   unsigned int i;
   asignal s;
-
+  int nmons;
+  // TODO:
+  // Need to write function using GetClientSize() to divide vertically
+  // By the number of monitors and draw the traces appropriately.
+  // This grid should be divided equally between all the traces.
+  
+  GetClientSize(&w, &h);
+  
   if (cycles >= 0) cyclesdisplayed = cycles;
 
   SetCurrent(*context);
@@ -48,22 +87,30 @@ void MyGLCanvas::Render(wxString example_text, int cycles)
     init = true;
   }
   glClear(GL_COLOR_BUFFER_BIT);
+  
+  int mcount;
+  mcount = mmz->moncount();
+  //mcount = 10;
+  if ((cyclesdisplayed >= 0) && (mcount > 0)) { // draw the first monitor signal, get trace from monitor class
+	
+	float gap = h/mcount;
+	for(int i = 0; i < mcount; i++){
+	  DrawMonSig(i*gap, gap, i, cyclesdisplayed);
+	}
+	
+    //glColor3f(1.0, 0.0, 0.0);
+    //glBegin(GL_LINE_STRIP);
+    //for (i=0; i<cyclesdisplayed; i++) {
+      //if (mmz->getsignaltrace(0, i, s)) {
+	//if (s==low) y = 10.0;
+	//if (s==high) y = 30.0;
+	//glVertex2f(20*i+10.0, y); 
+	//glVertex2f(20*i+30.0, y);
+      //}
+    //}
+    //glEnd();
 
-  if ((cyclesdisplayed >= 0) && (mmz->moncount() > 0)) { // draw the first monitor signal, get trace from monitor class
-
-    glColor3f(1.0, 0.0, 0.0);
-    glBegin(GL_LINE_STRIP);
-    for (i=0; i<cyclesdisplayed; i++) {
-      if (mmz->getsignaltrace(0, i, s)) {
-	if (s==low) y = 10.0;
-	if (s==high) y = 30.0;
-	glVertex2f(20*i+10.0, y); 
-	glVertex2f(20*i+30.0, y);
-      }
-    }
-    glEnd();
-
-  } else { // draw an artificial trace
+  } else { /*// draw an artificial trace
 
     glColor3f(1.0, 0.0, 0.0);
     glBegin(GL_LINE_STRIP);
@@ -85,7 +132,7 @@ void MyGLCanvas::Render(wxString example_text, int cycles)
       glVertex2f(20*i+30.0, y);
     }
     glEnd();
-    
+    */
   }
 
   // Example of how to use GLUT to draw text on the canvas
@@ -101,7 +148,7 @@ void MyGLCanvas::Render(wxString example_text, int cycles)
 void MyGLCanvas::InitGL()
   // Function to initialise the GL context
 {
-  int w, h;
+  //int w, h;
 
   GetClientSize(&w, &h);
   SetCurrent(*context);
@@ -120,7 +167,7 @@ void MyGLCanvas::InitGL()
 void MyGLCanvas::OnPaint(wxPaintEvent& event)
   // Event handler for when the canvas is exposed
 {
-  int w, h;
+  //int w, h;
   wxString text;
 
   wxPaintDC dc(this); // required for correct refreshing under MS windows
@@ -139,7 +186,7 @@ void MyGLCanvas::OnMouse(wxMouseEvent& event)
   // Event handler for mouse events inside the GL canvas
 {
   wxString text;
-  int w, h;;
+  //int w, h;;
   static int last_x, last_y;
 
   GetClientSize(&w, &h);

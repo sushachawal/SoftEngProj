@@ -51,6 +51,9 @@ class MyGLCanvas: public wxGLCanvas
 	     const wxString& name = "MyGLCanvas", const wxPalette &palette=wxNullPalette); // constructor
   void Render(wxString example_text = "", int cycles = -1); // function to draw canvas contents
  private:
+  int w, h;							 // Window width and height
+  void DrawMonSig(float y, float gap, int monnum, int cyclesdisplayed); // Draw the monitor signal with index monum 
+										// starting at vertical postion y
   wxGLContext *context;              // OpenGL rendering context
   bool init;                         // has the OpenGL context been initialised?
   int pan_x;                         // the current x pan
