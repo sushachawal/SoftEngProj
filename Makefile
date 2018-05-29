@@ -13,7 +13,7 @@ G_OBJECTS = guitest.o names.o network.o monitor.o devices.o gui.o
 .SUFFIXES:	.o .cc
 
 .cc.o :
-	$(CXX) -c `/homes/ahg13/wxWidgets-3.0.3/gtk-build/wx-config --version=3.0 --cxxflags` -g -o $@ $<
+	$(CXX) -c `/homes/ahg13/wxWidgets-3.0.3/gtk-build/wx-config --version=3.0 --cxxflags` -g -std=c++11 -o $@ $<
 
 all:    logsim guitest
 

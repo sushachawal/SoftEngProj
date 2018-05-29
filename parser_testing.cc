@@ -26,11 +26,10 @@ int main(int argc, char **argv){
   smz = new scanner(nmz, argv[1]);
   prsr = new parser(netz, dmz, mmz, smz);
   
-  bool okprsr;
+  bool okprsr =prsr->readin();
   bool oknetz;
-  prsr->readin(okprsr);
   netz->checknetwork(oknetz);
-  cout << "File read in?: " << okprsr << endl;
+  cout << "File read in?: " <<  okprsr << endl;
   cout << "Everything connected?: " << oknetz << endl;
   
   // Construct the text-based interface

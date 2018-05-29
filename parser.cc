@@ -1,3 +1,5 @@
+
+
 #include <iostream>
 #include "parser.h"
 #include <exception>
@@ -6,8 +8,19 @@ using namespace std;
 
 /* The parser for the circuit definition files */
 
-
-void parser::readin (bool &ok)
+/***********************************************************************
+ *
+ * Function to be called from logicsim.cc. Interprets the .txt file
+ * using the EBNF syntax specified for the logic circuit and returns
+ * the success or failure of parsing.
+ *
+ * @param NONE
+ *
+ * @return bool true if the parsing was successful without any syntax
+ * or semantic errors and false if there were some errors.
+ *
+ */
+bool parser::readin (void)
 {
   stage = 1;
   parsed = false;
@@ -25,8 +38,8 @@ void parser::readin (bool &ok)
     }
   }
   if (errorcount == 0){
-    ok = true;
-  } else ok = false;
+    return true;
+  } else return false;
 }
 
 void parser::begin(int stage){
@@ -65,10 +78,13 @@ void parser::begin(int stage){
   }
 }
 
+//TODO: No valid recovery option after badsym!
+
 void parser::recover(void){
   while(cursym != semicol && cursym != eofsym){
     smz->getsymbol(cursym, curid, curnum);
-  }
+  } //Keep getting symbols until either a semi colon or end of file.
+  //cout << "\033[1;31m"<< to_string(cursym) << "\033[0m\n" << endl;
   if(cursym == eofsym){
     stage = -2;
   } else{
@@ -114,7 +130,7 @@ void parser::generator(void){
   bool ok;
   name devid;
   int devnum;
-  
+
 	if (curid == smz->nmz->lookup("CLOCK")) {          // Check if device is a 'CLOCK' or 'SWITCH'
     smz->getsymbol(cursym, curid, curnum);
     if(cursym == namesym){                  // Check namesym after gensym
@@ -201,7 +217,7 @@ void parser::logic(devicekind dkind){
   bool ok;
   name devid;
   int devnum;
-  
+
   smz->getsymbol(cursym, curid, curnum);
   if(cursym == namesym){                                  // Check namesym after logsym
     smz->getsymbol(cursym, curid, curnum);
@@ -230,7 +246,7 @@ void parser::logic(devicekind dkind){
 void parser::dtype_(void){
   bool ok;
   name devid;
-  
+
   smz->getsymbol(cursym, curid, curnum);
   if(cursym == namesym){
     cout << "Making dtype device ";
@@ -254,7 +270,7 @@ void parser::Xor(void){
   bool ok;
   name devid;
   int devnum;
-  
+
   smz->getsymbol(cursym, curid, curnum);
   if(cursym == namesym){
     cout << "Making xor device ";
@@ -278,7 +294,7 @@ void parser::Xor(void){
 void parser::connections(void){
   name indev, insig, outdev, outsig;
   bool ok;
-  
+
   while(cursym == namesym){
     cout << "Connecting output ";
     outdev = curid;
@@ -304,7 +320,7 @@ void parser::connections(void){
 void parser::output(name outdev, name& outsig){
   devlink dev = netz->finddevice(outdev);
   outplink olink;
-  
+
   if(dev){                                              // Check device exists
     smz->getsymbol(cursym, curid, curnum);
     if(cursym == dotsym){                               // if dotsym, must be dtype
@@ -336,7 +352,7 @@ void parser::output(name outdev, name& outsig){
 void parser::input(name indev, name& insig){
   devlink dev = netz->finddevice(indev);
   inplink ilink;
-  
+
   if(cursym == namesym){
     if(dev){                                                // Check device exists
       smz->getsymbol(cursym, curid, curnum);
@@ -361,7 +377,7 @@ void parser::input(name indev, name& insig){
 void parser::monitors(void){
   name devid;
   bool ok;
-  
+
   if(cursym == monsym){
     cout << "Monitoring ";
     smz->getsymbol(cursym, curid, curnum);
