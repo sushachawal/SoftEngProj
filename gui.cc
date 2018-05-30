@@ -281,7 +281,8 @@ MyFrame::MyFrame(wxWindow *parent, const wxString& title, const wxPoint& pos, co
   
   //My code starts here------------------------------------------------------
   int gui_sig_index=0, device_id, input_id, output_id, GUI_ID, offset = 3, mon_index, mon_sig_id, mon_dev_id;
-  string nameOfDevice, nameOfInput, nameOfOutput;
+  string nameOfDevice, nameOfInput, nameOfOutput, monitorLabel;
+
   devlink d;
   inplink i;
   outplink o;
@@ -296,7 +297,9 @@ MyFrame::MyFrame(wxWindow *parent, const wxString& title, const wxPoint& pos, co
 			gui_ids_signals.push_back( GUI_ID);
 			netw_ids_signals.push_back(input_id);
 			dev_ids_signals.push_back(device_id);
-			monitorMenu->AppendCheckItem(gui_ids_signals[gui_sig_index], nameOfDevice + "." +nameOfInput);
+			monitorLabel = nameOfDevice;
+			if(nameOfInput != "") monitorLabel += ("." +nameOfInput);
+			monitorMenu->AppendCheckItem(gui_ids_signals[gui_sig_index], monitorLabel);
 			
 			for(mon_index =0; mon_index < mmz->moncount();mon_index++){
 				mmz->getmonname(mon_index, mon_dev_id, mon_sig_id);
@@ -315,7 +318,10 @@ MyFrame::MyFrame(wxWindow *parent, const wxString& title, const wxPoint& pos, co
 			gui_ids_signals.push_back( GUI_ID);
 			netw_ids_signals.push_back(output_id);
 			dev_ids_signals.push_back(device_id);
-			monitorMenu->AppendCheckItem(gui_ids_signals[gui_sig_index], nameOfDevice + "." +nameOfOutput);
+			
+			monitorLabel = nameOfDevice;
+			if(nameOfOutput != "") monitorLabel += ("." + nameOfOutput);
+			monitorMenu->AppendCheckItem(gui_ids_signals[gui_sig_index], monitorLabel);
 			
 			for(mon_index =0; mon_index < mmz->moncount();mon_index++){
 				mmz->getmonname(mon_index, mon_dev_id, mon_sig_id);
@@ -323,7 +329,6 @@ MyFrame::MyFrame(wxWindow *parent, const wxString& title, const wxPoint& pos, co
 					monitorMenu->Check(gui_ids_signals[gui_sig_index], true);
 				}
 			}
-			
 			gui_sig_index++;
 		  }
 	  }
