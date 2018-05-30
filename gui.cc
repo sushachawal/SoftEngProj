@@ -281,7 +281,7 @@ MyFrame::MyFrame(wxWindow *parent, const wxString& title, const wxPoint& pos, co
   menuBar->Append(fileMenu, "&File");
   
   //My code starts here------------------------------------------------------
-  int gui_sig_index=0, device_id, input_id, output_id;
+  int gui_sig_index=0, device_id, input_id, output_id, GUI_ID, offset = 3;
   string nameOfDevice, nameOfInput, nameOfOutput;
   devlink d;
   inplink i;
@@ -289,30 +289,31 @@ MyFrame::MyFrame(wxWindow *parent, const wxString& title, const wxPoint& pos, co
   for (d = netz->devicelist(); d != NULL; d = d->next){
 	  device_id = d->id;
 	  nameOfDevice = nmz->getname(device_id);
+	  
 	  for(i = d->ilist; i!=NULL; i = i->next){
-		  {
 			input_id = i->id;
 			nameOfInput = nmz->getname(input_id);
-			gui_ids_signals.push_back( MY_BUTTON_ID2 + gui_sig_index + 3);
+			GUI_ID = MY_BUTTON_ID2 + gui_sig_index + offset;
+			gui_ids_signals.push_back( GUI_ID);
 			netw_ids_signals.push_back(input_id);
 			dev_ids_signals.push_back(device_id);
 			monitorMenu->AppendCheckItem(gui_ids_signals[gui_sig_index], nameOfDevice + "." +nameOfInput);
 			gui_sig_index++;
 		  }
-	  }
 	  
 	  for(o = d->olist; o!=NULL; o = o->next){
-		  {
 			output_id = o->id;
 			nameOfOutput = nmz->getname(output_id);
-			gui_ids_signals.push_back( MY_BUTTON_ID2 + gui_sig_index + 3);
+			GUI_ID = MY_BUTTON_ID2 + gui_sig_index + offset;
+			gui_ids_signals.push_back( GUI_ID);
 			netw_ids_signals.push_back(output_id);
 			dev_ids_signals.push_back(device_id);
 			monitorMenu->AppendCheckItem(gui_ids_signals[gui_sig_index], nameOfDevice + "." +nameOfOutput);
 			gui_sig_index++;
 		  }
+	  
 	  }
-  }
+  
   
   
   menuBar->Append(monitorMenu, "&Monitors");
@@ -382,6 +383,7 @@ void MyFrame::OnButton(wxCommandEvent &event)
 	mmz->makemonitor(dev_ids_signals[index], netw_ids_signals[index], ok);
 	}
   }
+  
   cyclescompleted = 0;
   dmz->initdevices ();
   mmz->resetmonitor ();
@@ -392,10 +394,20 @@ void MyFrame::OnButton(wxCommandEvent &event)
 void MyFrame::OnButton2(wxCommandEvent &event)
   // Event handler for the push button 2
 {
+  int n, ncycles, index, num_monitors, dev_id_delete, sig_id_delete;
+  bool ischecked, ok;
+  
+  num_monitors = mmz->moncount();
+  for(index = 0; index<num_monitors; index++){
+	mmz->getmonname(index, dev_id_delete, sig_id_delete);
+	mmz->remmonitor(dev_id_delete, sig_id_delete, ok);
+  }
+  
   cyclescompleted = 0;
-  //mmz->resetmonitor ();
+  mmz->resetmonitor ();
   runnetwork(spin->GetValue());
   canvas->Render("Continue button pressed", cyclescompleted);
+  cout<<num_monitors<<" "<<mmz->moncount()<<endl;
 }
 
 void MyFrame::OnSpin(wxSpinEvent &event)
