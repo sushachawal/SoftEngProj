@@ -2,6 +2,7 @@
 #include <GL/glut.h>
 #include "wx_icon.xpm"
 #include <iostream>
+#include <vector>
 
 using namespace std;
 
@@ -14,6 +15,15 @@ BEGIN_EVENT_TABLE(MyGLCanvas, wxGLCanvas)
 END_EVENT_TABLE()
   
 int wxglcanvas_attrib_list[5] = {WX_GL_RGBA, WX_GL_DOUBLEBUFFER, WX_GL_DEPTH_SIZE, 16, 0};
+struct monitoredSignals{
+int gui_id;
+int netw_id;
+int dev_id;
+bool is_monitored;
+};
+vector<monitoredSignals> mon_signal_list;
+
+vector<int> gui_ids_signals, netw_ids_signals, dev_ids_signals;
 
 MyGLCanvas::MyGLCanvas(wxWindow *parent, wxWindowID id, monitor* monitor_mod, names* names_mod, const wxPoint& pos, 
 		       const wxSize& size, long style, const wxString& name, const wxPalette& palette):
@@ -198,10 +208,8 @@ MyFrame::MyFrame(wxWindow *parent, const wxString& title, const wxPoint& pos, co
   menuBar->Append(fileMenu, "&File");
   
   //My code starts here------------------------------------------------------
-  wxMenu *monitorMenu = new wxMenu;
-  int Sig_num = 30, gui_index=0, device_id, input_id, output_id;
+  int gui_sig_index=0, device_id, input_id, output_id;
   string nameOfDevice, nameOfInput, nameOfOutput;
-  int MY_SIGNAL_ID[Sig_num];
   devlink d;
   inplink i;
   outplink o;
@@ -212,9 +220,11 @@ MyFrame::MyFrame(wxWindow *parent, const wxString& title, const wxPoint& pos, co
 		  {
 			input_id = i->id;
 			nameOfInput = nmz->getname(input_id);
-			MY_SIGNAL_ID[gui_index] = MY_BUTTON_ID2 + gui_index + 1;
-			monitorMenu->AppendCheckItem(MY_SIGNAL_ID[gui_index], nameOfDevice + "." +nameOfInput);
-			gui_index++;
+			gui_ids_signals.push_back( MY_BUTTON_ID2 + gui_sig_index + 3);
+			netw_ids_signals.push_back(input_id);
+			dev_ids_signals.push_back(device_id);
+			monitorMenu->AppendCheckItem(gui_ids_signals[gui_sig_index], nameOfDevice + "." +nameOfInput);
+			gui_sig_index++;
 		  }
 	  }
 	  
@@ -222,9 +232,11 @@ MyFrame::MyFrame(wxWindow *parent, const wxString& title, const wxPoint& pos, co
 		  {
 			output_id = o->id;
 			nameOfOutput = nmz->getname(output_id);
-			MY_SIGNAL_ID[gui_index] = MY_BUTTON_ID2 + gui_index + 1;
-			monitorMenu->AppendCheckItem(MY_SIGNAL_ID[gui_index], nameOfDevice + "." +nameOfOutput);
-			gui_index++;
+			gui_ids_signals.push_back( MY_BUTTON_ID2 + gui_sig_index + 3);
+			netw_ids_signals.push_back(output_id);
+			dev_ids_signals.push_back(device_id);
+			monitorMenu->AppendCheckItem(gui_ids_signals[gui_sig_index], nameOfDevice + "." +nameOfOutput);
+			gui_sig_index++;
 		  }
 	  }
   }
@@ -279,7 +291,18 @@ void MyFrame::OnAbout(wxCommandEvent &event)
 void MyFrame::OnButton(wxCommandEvent &event)
   // Event handler for the push button
 {
-  int n, ncycles;
+  int n, ncycles, index;
+  bool ischecked, ok;
+  for(index = 0; index < gui_ids_signals.size(); index++){
+	ischecked = monitorMenu->IsChecked(gui_ids_signals[index]);
+	
+	if(ischecked){
+	mmz->makemonitor(dev_ids_signals[index], netw_ids_signals[index], ok);
+	}
+	else{
+	mmz->remmonitor(dev_ids_signals[index], netw_ids_signals[index], ok);
+	}
+  }
   cyclescompleted = 0;
   dmz->initdevices ();
   mmz->resetmonitor ();
@@ -290,9 +313,7 @@ void MyFrame::OnButton(wxCommandEvent &event)
 void MyFrame::OnButton2(wxCommandEvent &event)
   // Event handler for the push button 2
 {
-  int n, ncycles;
-
-  //cyclescompleted = 0;
+  cyclescompleted = 0;
   //mmz->resetmonitor ();
   runnetwork(spin->GetValue());
   canvas->Render("Continue button pressed", cyclescompleted);
