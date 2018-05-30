@@ -48,10 +48,26 @@ void MyGLCanvas::DrawMonSig(float y, float gap, int monnum, int cyclesdisplayed)
   glVertex2f(w - w*0.1, vert0);
   glEnd();
   
+  //Draw Horizontal Axis Arrow
+  glBegin(GL_TRIANGLES);
+  glColor3f(0,0,0);
+  glVertex2f(w - w*0.1, vert0 - gap*0.03);
+  glVertex2f(w - w*0.1 + gap*0.03*0.7071,vert0);
+  glVertex2f(w - w*0.1, vert0 + gap*0.03);
+  glEnd();
+  
   //Draw Vertical Axis:
   glBegin(GL_LINE_STRIP);
   glVertex2f(0 + w*0.1, vert0);
   glVertex2f(0 + w*0.1, vert1);
+  glEnd();
+
+  //Draw Vertical Axis Arrow
+  glBegin(GL_TRIANGLES);
+  glColor3f(0,0,0);
+  glVertex2f(0 + w*0.1 + gap*0.03, vert1);
+  glVertex2f(0 + w*0.1 , vert1 + gap*0.03*0.7071);
+  glVertex2f(0 + w*0.1 - gap*0.03, vert1);
   glEnd();
   
   glColor3f(1.0, 0.0, 0.0);
