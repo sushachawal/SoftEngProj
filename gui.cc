@@ -2,7 +2,7 @@
 #include <GL/glut.h>
 #include "wx_icon.xpm"
 #include <iostream>
-#include <vector>
+
 
 using namespace std;
 
@@ -15,7 +15,6 @@ BEGIN_EVENT_TABLE(MyGLCanvas, wxGLCanvas)
 END_EVENT_TABLE()
   
 int wxglcanvas_attrib_list[5] = {WX_GL_RGBA, WX_GL_DOUBLEBUFFER, WX_GL_DEPTH_SIZE, 16, 0};
-vector<int> gui_ids_signals, netw_ids_signals, dev_ids_signals;
 
 MyGLCanvas::MyGLCanvas(wxWindow *parent, wxWindowID id, monitor* monitor_mod, names* names_mod, const wxPoint& pos, 
 		       const wxSize& size, long style, const wxString& name, const wxPalette& palette):
@@ -299,7 +298,6 @@ MyFrame::MyFrame(wxWindow *parent, const wxString& title, const wxPoint& pos, co
 	  }
   
   
-  
   menuBar->Append(monitorMenu, "&Monitors");
   
   wxMenu *switchMenu = new wxMenu;
@@ -354,9 +352,9 @@ void MyFrame::OnButton(wxCommandEvent &event)
   int n, ncycles, index, num_monitors, dev_id_delete, sig_id_delete;
   bool ischecked, ok;
   
-  num_monitors = mmz->moncount();
-  for(index = 0; index<num_monitors; index++){
-	mmz->getmonname(index, dev_id_delete, sig_id_delete);
+  
+  while(mmz->moncount() > 0){
+	mmz->getmonname(0, dev_id_delete, sig_id_delete);
 	mmz->remmonitor(dev_id_delete, sig_id_delete, ok);
   }
   
@@ -365,6 +363,7 @@ void MyFrame::OnButton(wxCommandEvent &event)
 	
 	if(ischecked){
 	mmz->makemonitor(dev_ids_signals[index], netw_ids_signals[index], ok);
+	cout<<dev_ids_signals[index]<<" "<<netw_ids_signals[index]<<" "<<ok<<endl;
 	}
   }
   
@@ -383,15 +382,20 @@ void MyFrame::OnButton2(wxCommandEvent &event)
   
   num_monitors = mmz->moncount();
   for(index = 0; index<num_monitors; index++){
-	mmz->getmonname(index, dev_id_delete, sig_id_delete);
-	mmz->remmonitor(dev_id_delete, sig_id_delete, ok);
+	  mmz->getmonname(index, dev_id_delete, sig_id_delete);
+	  cout<<dev_id_delete<<" "<<sig_id_delete<<endl;
   }
+  
+  
+  
+  
   
   cyclescompleted = 0;
   mmz->resetmonitor ();
   runnetwork(spin->GetValue());
   canvas->Render("Continue button pressed", cyclescompleted);
   cout<<num_monitors<<" "<<mmz->moncount()<<endl;
+  
 }
 
 void MyFrame::OnSpin(wxSpinEvent &event)

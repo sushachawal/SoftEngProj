@@ -9,6 +9,7 @@
 #include "devices.h"
 #include "monitor.h"
 #include "network.h"
+#include <vector>
 
 enum MyEnum{
   MY_SPINCNTRL_ID = wxID_HIGHEST + 1,
@@ -43,6 +44,7 @@ class MyFrame: public wxFrame
   void OnSpin(wxSpinEvent& event);        // event handler for spin control
   void OnText(wxCommandEvent& event);     // event handler for text entry field
   void OnCheck(wxCommandEvent& event);    // event handler for checkbox
+  vector<int> gui_ids_signals, netw_ids_signals, dev_ids_signals;
   DECLARE_EVENT_TABLE()
 };
     
