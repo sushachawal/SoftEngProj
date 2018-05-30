@@ -15,14 +15,6 @@ BEGIN_EVENT_TABLE(MyGLCanvas, wxGLCanvas)
 END_EVENT_TABLE()
   
 int wxglcanvas_attrib_list[5] = {WX_GL_RGBA, WX_GL_DOUBLEBUFFER, WX_GL_DEPTH_SIZE, 16, 0};
-struct monitoredSignals{
-int gui_id;
-int netw_id;
-int dev_id;
-bool is_monitored;
-};
-vector<monitoredSignals> mon_signal_list;
-
 vector<int> gui_ids_signals, netw_ids_signals, dev_ids_signals;
 
 MyGLCanvas::MyGLCanvas(wxWindow *parent, wxWindowID id, monitor* monitor_mod, names* names_mod, const wxPoint& pos, 
@@ -240,6 +232,8 @@ MyFrame::MyFrame(wxWindow *parent, const wxString& title, const wxPoint& pos, co
 		  }
 	  }
   }
+  
+  
   menuBar->Append(monitorMenu, "&Monitors");
   
   wxMenu *switchMenu = new wxMenu;
@@ -291,16 +285,20 @@ void MyFrame::OnAbout(wxCommandEvent &event)
 void MyFrame::OnButton(wxCommandEvent &event)
   // Event handler for the push button
 {
-  int n, ncycles, index;
+  int n, ncycles, index, num_monitors, dev_id_delete, sig_id_delete;
   bool ischecked, ok;
+  
+  num_monitors = mmz->moncount();
+  for(index = 0; index<num_monitors; index++){
+	mmz->getmonname(index, dev_id_delete, sig_id_delete);
+	mmz->remmonitor(dev_id_delete, sig_id_delete, ok);
+  }
+  
   for(index = 0; index < gui_ids_signals.size(); index++){
 	ischecked = monitorMenu->IsChecked(gui_ids_signals[index]);
 	
 	if(ischecked){
 	mmz->makemonitor(dev_ids_signals[index], netw_ids_signals[index], ok);
-	}
-	else{
-	mmz->remmonitor(dev_ids_signals[index], netw_ids_signals[index], ok);
 	}
   }
   cyclescompleted = 0;
