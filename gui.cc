@@ -37,17 +37,22 @@ void MyGLCanvas::DrawMonSig(float y, float gap, int monnum, int cyclesdisplayed)
   float vert0 = y + 0.2*gap;
   float vert1 = y + 0.8*gap;
   DrawMonLabel(0 + w*0.1,vert1 + (vert1-vert0)*0.1,monnum);
-  float cycle_gap = 0.8*w/cyclesdisplayed;
+  float cycle_gap = 0.75*w/cyclesdisplayed;
   float sigheight = (vert1-vert0)*0.8;
+  
+  //Draw Horizontal Axis
   glColor3f(0.0, 0.0, 0.0);
   glBegin(GL_LINE_STRIP);
   glVertex2f(0 + w*0.1, vert0);
   glVertex2f(w - w*0.1, vert0);
   glEnd();
+  
+  //Draw Vertical Axis:
   glBegin(GL_LINE_STRIP);
   glVertex2f(0 + w*0.1, vert0);
   glVertex2f(0 + w*0.1, vert1);
   glEnd();
+  
   glColor3f(1.0, 0.0, 0.0);
   glBegin(GL_LINE_STRIP);
   asignal s;
@@ -87,10 +92,6 @@ void MyGLCanvas::Render(wxString example_text, int cycles)
   unsigned int i;
   asignal s;
   int nmons;
-  // TODO:
-  // Need to write function using GetClientSize() to divide vertically
-  // By the number of monitors and draw the traces appropriately.
-  // This grid should be divided equally between all the traces.
   
   GetClientSize(&w, &h);
   
