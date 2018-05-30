@@ -281,7 +281,7 @@ MyFrame::MyFrame(wxWindow *parent, const wxString& title, const wxPoint& pos, co
   
   //My code starts here------------------------------------------------------
   int gui_sig_index=0, device_id, input_id, output_id, GUI_ID, offset = 3;
-  string nameOfDevice, nameOfInput, nameOfOutput;
+  string nameOfDevice, nameOfInput, nameOfOutput, monitorLabel;
   devlink d;
   inplink i;
   outplink o;
@@ -296,7 +296,9 @@ MyFrame::MyFrame(wxWindow *parent, const wxString& title, const wxPoint& pos, co
 			gui_ids_signals.push_back( GUI_ID);
 			netw_ids_signals.push_back(input_id);
 			dev_ids_signals.push_back(device_id);
-			monitorMenu->AppendCheckItem(gui_ids_signals[gui_sig_index], nameOfDevice + "." +nameOfInput);
+			monitorLabel = nameOfDevice;
+			if(nameOfInput != "") monitorLabel += ("." +nameOfInput);
+			monitorMenu->AppendCheckItem(gui_ids_signals[gui_sig_index], monitorLabel);
 			gui_sig_index++;
 		  }
 	  
@@ -307,7 +309,9 @@ MyFrame::MyFrame(wxWindow *parent, const wxString& title, const wxPoint& pos, co
 			gui_ids_signals.push_back( GUI_ID);
 			netw_ids_signals.push_back(output_id);
 			dev_ids_signals.push_back(device_id);
-			monitorMenu->AppendCheckItem(gui_ids_signals[gui_sig_index], nameOfDevice + "." +nameOfOutput);
+			monitorLabel = nameOfDevice;
+			if(nameOfOutput != "") monitorLabel += ("." + nameOfOutput);
+			monitorMenu->AppendCheckItem(gui_ids_signals[gui_sig_index], monitorLabel);
 			gui_sig_index++;
 		  }
 	  
@@ -372,23 +376,18 @@ void MyFrame::OnButton(wxCommandEvent &event)
   while(mmz->moncount() > 0){
 	mmz->getmonname(0, dev_id_delete, sig_id_delete);
 	mmz->remmonitor(dev_id_delete, sig_id_delete, ok);
-	cout<<dev_id_delete<<" "<<sig_id_delete<<" "<<ok<<endl;
   }
-  cout<<mmz->moncount()<<endl;
   
   for(index = 0; index < gui_ids_signals.size(); index++){
 	ischecked = monitorMenu->IsChecked(gui_ids_signals[index]);
 	
 	if(ischecked){
 	mmz->makemonitor(dev_ids_signals[index], netw_ids_signals[index], ok);
-	cout<<dev_ids_signals[index]<<" "<<netw_ids_signals[index]<<" "<<ok<<endl;
 	mmz->getmonname(monindex, dev_id_delete, sig_id_delete);
 	monindex++;
-	cout<<dev_id_delete<<" "<<sig_id_delete<<endl;
 	}
   }
   
-  cout<<endl;
   cyclescompleted = 0;
   dmz->initdevices ();
   mmz->resetmonitor ();
