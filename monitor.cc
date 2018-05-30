@@ -24,13 +24,17 @@ void monitor::makemonitor (name dev, name pin, bool& ok)
       if (o != NULL){
         mtab.sigs[mtab.used].devid = dev;
         mtab.sigs[mtab.used].op = o;
+        mtab.sigs[mtab.used].ip = NULL;
         (mtab.used)++;
         ok = true;
+        cout<<"output pin"<<" ";
       } else if (i != NULL){
         mtab.sigs[mtab.used].devid = dev;
         mtab.sigs[mtab.used].ip = i;
+        mtab.sigs[mtab.used].op = NULL;
         (mtab.used)++;
         ok = true;
+        cout<<"input pin"<<" ";
         /*
         o = i->connect;
         dev = i->outid;
@@ -42,6 +46,7 @@ void monitor::makemonitor (name dev, name pin, bool& ok)
       }
     }
   }
+  cout<<endl;
 }
 
 

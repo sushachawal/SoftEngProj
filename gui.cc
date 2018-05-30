@@ -365,14 +365,16 @@ void MyFrame::OnAbout(wxCommandEvent &event)
 void MyFrame::OnButton(wxCommandEvent &event)
   // Event handler for the push button
 {
-  int n, ncycles, index, num_monitors, dev_id_delete, sig_id_delete;
+  int n, ncycles, index, num_monitors, dev_id_delete, sig_id_delete, monindex = 0;
   bool ischecked, ok;
   
   
   while(mmz->moncount() > 0){
 	mmz->getmonname(0, dev_id_delete, sig_id_delete);
 	mmz->remmonitor(dev_id_delete, sig_id_delete, ok);
+	cout<<dev_id_delete<<" "<<sig_id_delete<<" "<<ok<<endl;
   }
+  cout<<mmz->moncount()<<endl;
   
   for(index = 0; index < gui_ids_signals.size(); index++){
 	ischecked = monitorMenu->IsChecked(gui_ids_signals[index]);
@@ -380,9 +382,13 @@ void MyFrame::OnButton(wxCommandEvent &event)
 	if(ischecked){
 	mmz->makemonitor(dev_ids_signals[index], netw_ids_signals[index], ok);
 	cout<<dev_ids_signals[index]<<" "<<netw_ids_signals[index]<<" "<<ok<<endl;
+	mmz->getmonname(monindex, dev_id_delete, sig_id_delete);
+	monindex++;
+	cout<<dev_id_delete<<" "<<sig_id_delete<<endl;
 	}
   }
   
+  cout<<endl;
   cyclescompleted = 0;
   dmz->initdevices ();
   mmz->resetmonitor ();
