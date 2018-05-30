@@ -5,7 +5,7 @@
 
 using namespace std;
 
-// MyGLCanvas ////////////////////////////////////////////////////////////////////////////////////
+// /MyGLCanvas ////////////////////////////////////////////////////////////////////////////////////
 
 BEGIN_EVENT_TABLE(MyGLCanvas, wxGLCanvas)
   EVT_SIZE(MyGLCanvas::OnSize)
@@ -281,9 +281,6 @@ MyFrame::MyFrame(wxWindow *parent, const wxString& title, const wxPoint& pos, co
   menuBar->Append(monitorMenu, "&Monitors");
   
   wxMenu *switchMenu = new wxMenu;
-  //int MY_SWITCH_ID = MY_BUTTON_ID2 + 200;
-  //switchMenu->AppendCheckItem(MY_SWITCH_ID, "&Switch");
-  
   int Switch_num = 10;
   int MY_SWITCH_ID[Switch_num];
   for(int i = 0; i< Switch_num; i++){
