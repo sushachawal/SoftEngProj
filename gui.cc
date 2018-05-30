@@ -279,10 +279,11 @@ MyFrame::MyFrame(wxWindow *parent, const wxString& title, const wxPoint& pos, co
   wxMenuBar *menuBar = new wxMenuBar;
   menuBar->Append(fileMenu, "&File");
   
-  //My code starts here------------------------------------------------------
-  int gui_sig_index=0, device_id, input_id, output_id, GUI_ID, offset = 3, mon_index, mon_sig_id, mon_dev_id;
+  
+  int gui_sig_index=0, device_id, input_id, output_id, GUI_ID, offset, mon_index, mon_sig_id, mon_dev_id;
   string nameOfDevice, nameOfInput, nameOfOutput, monitorLabel;
 
+  offset = MY_BUTTON_ID2 + 3;
   devlink d;
   inplink i;
   outplink o;
@@ -293,7 +294,7 @@ MyFrame::MyFrame(wxWindow *parent, const wxString& title, const wxPoint& pos, co
 	  for(i = d->ilist; i!=NULL; i = i->next){
 			input_id = i->id;
 			nameOfInput = nmz->getname(input_id);
-			GUI_ID = MY_BUTTON_ID2 + gui_sig_index + offset;
+			GUI_ID = gui_sig_index + offset;
 			gui_ids_signals.push_back( GUI_ID);
 			netw_ids_signals.push_back(input_id);
 			dev_ids_signals.push_back(device_id);
@@ -314,7 +315,7 @@ MyFrame::MyFrame(wxWindow *parent, const wxString& title, const wxPoint& pos, co
 	  for(o = d->olist; o!=NULL; o = o->next){
 			output_id = o->id;
 			nameOfOutput = nmz->getname(output_id);
-			GUI_ID = MY_BUTTON_ID2 + gui_sig_index + offset;
+			GUI_ID = gui_sig_index + offset;
 			gui_ids_signals.push_back( GUI_ID);
 			netw_ids_signals.push_back(output_id);
 			dev_ids_signals.push_back(device_id);
@@ -336,17 +337,28 @@ MyFrame::MyFrame(wxWindow *parent, const wxString& title, const wxPoint& pos, co
   
   menuBar->Append(monitorMenu, "&Monitors");
   
-  wxMenu *switchMenu = new wxMenu;
-  int Switch_num = 10;
-  int MY_SWITCH_ID[Switch_num];
-  for(int i = 0; i< Switch_num; i++){
-	  MY_SWITCH_ID[i] = MY_BUTTON_ID2 + i + 200;
-	  switchMenu->AppendCheckItem(MY_SWITCH_ID[i], "&Switch is on");
+
+  devicekind kindDevice;
+  offset = offset + gui_sig_index + 3;
+  int gui_sw_index=0; 
+  for (d = netz->devicelist(); d != NULL; d = d->next){
+	  device_id = d->id;
+	  nameOfDevice = nmz->getname(device_id);
+	  kindDevice = (netz->finddevice(device_id))->kind;
+	  if(kindDevice == aswitch){
+		  GUI_ID = gui_sw_index + offset;
+		  gui_ids_switches.push_back( GUI_ID);
+		  netw_ids_switches.push_back(device_id);
+		  switchMenu->AppendCheckItem(gui_ids_switches[gui_sw_index], nameOfDevice);
+		  if(d->swstate == high){
+			  switchMenu->Check(gui_ids_switches[gui_sw_index], true);
+			  }
+		  }
   }
   
   menuBar->Append(switchMenu, "&Switches");
   
-  //My code ends here--------------------------------------------------------
+
   SetMenuBar(menuBar);
 
   wxBoxSizer *topsizer = new wxBoxSizer(wxHORIZONTAL);
@@ -358,6 +370,7 @@ MyFrame::MyFrame(wxWindow *parent, const wxString& title, const wxPoint& pos, co
   button_sizer->Add(new wxButton(this, MY_BUTTON_ID2, "Continue"), 0, wxALL, 10);
   button_sizer->Add(new wxStaticText(this, wxID_ANY, "Cycles"), 0, wxTOP|wxLEFT|wxRIGHT, 10);
   spin = new wxSpinCtrl(this, MY_SPINCNTRL_ID, wxString("10"));
+  spin->SetRange(0, 50);
   button_sizer->Add(spin, 0 , wxALL, 10);
   
   button_sizer->Add(new wxTextCtrl(this, MY_TEXTCTRL_ID, "", wxDefaultPosition, wxDefaultSize, wxTE_PROCESS_ENTER), 0 , wxALL, 10);
@@ -388,7 +401,6 @@ void MyFrame::OnButton(wxCommandEvent &event)
   int n, ncycles, index, num_monitors, dev_id_delete, sig_id_delete, monindex = 0;
   bool ischecked, ok;
   
-  
   while(mmz->moncount() > 0){
 	mmz->getmonname(0, dev_id_delete, sig_id_delete);
 	mmz->remmonitor(dev_id_delete, sig_id_delete, ok);
@@ -401,9 +413,20 @@ void MyFrame::OnButton(wxCommandEvent &event)
 	mmz->makemonitor(dev_ids_signals[index], netw_ids_signals[index], ok);
 	}
   }
-
+  
+  for(index = 0; index < gui_ids_switches.size(); index++){
+	ischecked = switchMenu->IsChecked(gui_ids_switches[index]);
+	  
+	if(ischecked){
+	dmz->setswitch(netw_ids_switches[index], high, ok);
+	}
+	else{
+	dmz->setswitch(netw_ids_switches[index], low, ok);
+	}
+	
+  }
+  
   cyclescompleted = 0;
-  dmz->initdevices ();
   mmz->resetmonitor ();
   runnetwork(spin->GetValue());
   canvas->Render("Run button pressed", cyclescompleted);
