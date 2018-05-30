@@ -36,7 +36,9 @@ void MyGLCanvas::DrawMonSig(float y, float gap, int monnum, int cyclesdisplayed)
   //Draw the axes:
   float vert0 = y + 0.2*gap;
   float vert1 = y + 0.8*gap;
+  DrawMonLabel(0 + w*0.1,vert1 + (vert1-vert0)*0.1,monnum);
   float cycle_gap = 0.8*w/cyclesdisplayed;
+  float sigheight = (vert1-vert0)*0.8;
   glColor3f(0.0, 0.0, 0.0);
   glBegin(GL_LINE_STRIP);
   glVertex2f(0 + w*0.1, vert0);
@@ -53,13 +55,26 @@ void MyGLCanvas::DrawMonSig(float y, float gap, int monnum, int cyclesdisplayed)
   for (int i=0; i<cyclesdisplayed; i++) {
     if (mmz->getsignaltrace(monnum, i, s)) {
       if (s==low) vert = vert0;
-      if (s==high) vert = vert0 + (vert1-vert0)*0.8;
+      if (s==high) vert = vert0 + sigheight;
       glVertex2f(0 + w*0.1 + cycle_gap*i, vert); 
       glVertex2f(0 + w*0.1 + cycle_gap*(i+1), vert);
     }
   }
   glEnd();
   
+}
+
+void MyGLCanvas::DrawMonLabel(float x, float y, int monnum){
+  name monname, pin;
+  mmz-> getmonname(monnum, monname, pin);
+  namestring monnamestring = nmz->getname(monname);
+  namestring pinstring = nmz->getname(pin);
+  namestring monlabel = monnamestring;
+  if(pinstring != "") monlabel += '.' + pinstring;
+  //if(monnamestring == NULL) cout << "Error attempting to access non-existing monitor" << endl; return;
+  glColor3f(0.0, 0.0, 1.0);
+  glRasterPos2f(x, y);
+  for (int i = 0; i < monlabel.size(); i++) glutBitmapCharacter(GLUT_BITMAP_HELVETICA_10 , monlabel[i]);
 }
 
 void MyGLCanvas::Render(wxString example_text, int cycles)
@@ -136,9 +151,9 @@ void MyGLCanvas::Render(wxString example_text, int cycles)
   }
 
   // Example of how to use GLUT to draw text on the canvas
-  glColor3f(0.0, 0.0, 1.0);
-  glRasterPos2f(10, 100);
-  for (i = 0; i < example_text.Len(); i++) glutBitmapCharacter(GLUT_BITMAP_HELVETICA_12, example_text[i]);
+  //~ glColor3f(0.0, 0.0, 1.0);
+  //~ glRasterPos2f(10, 100);
+  //~ for (i = 0; i < example_text.Len(); i++) glutBitmapCharacter(  GLUT_BITMAP_HELVETICA_10 , example_text[i]);
 
   // We've been drawing to the back buffer, flush the graphics pipeline and swap the back buffer to the front
   glFlush();

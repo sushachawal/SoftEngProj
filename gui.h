@@ -52,8 +52,14 @@ class MyGLCanvas: public wxGLCanvas
   void Render(wxString example_text = "", int cycles = -1); // function to draw canvas contents
  private:
   int w, h;							 // Window width and height
-  void DrawMonSig(float y, float gap, int monnum, int cyclesdisplayed); // Draw the monitor signal with index monum 
-										// starting at vertical postion y
+  
+  // Draw the monitor signal with index monum 
+  // starting at vertical postion y
+  void DrawMonSig(float y, float gap, int monnum, int cyclesdisplayed); 
+  
+  // Draws the monitor label from the list of monitors
+  void DrawMonLabel(float x, float y, int monnum);
+  
   wxGLContext *context;              // OpenGL rendering context
   bool init;                         // has the OpenGL context been initialised?
   int pan_x;                         // the current x pan
