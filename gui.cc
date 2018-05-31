@@ -355,6 +355,10 @@ MyFrame::MyFrame(wxWindow *parent, const wxString& title, const wxPoint& pos, co
 		  if(d->swstate == high){
 			  switchMenu->Check(gui_ids_switches[gui_sw_index], true);
 			  }
+          if(d->swstate == low){
+			  switchMenu->Check(gui_ids_switches[gui_sw_index], false);
+			}
+			gui_sw_index++;
 		  }
   }
   
@@ -464,7 +468,6 @@ void MyFrame::OnButton(wxCommandEvent &event)
   
   for(index = 0; index < gui_ids_switches.size(); index++){
 	ischecked = switchMenu->IsChecked(gui_ids_switches[index]);
-	  
 	if(ischecked){
 	dmz->setswitch(netw_ids_switches[index], high, ok);
 	}
