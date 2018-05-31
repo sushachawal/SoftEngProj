@@ -41,7 +41,7 @@ public:
 	scanner(names* names_mod,     // pointer to names class, so scanner can use it
         const char* defname); // name of file from which to read the definitions
 
-	~scanner(); // destructor of the class, closes input file
+	~scanner(){}; // destructor of the class, closes input file
 
 	void getch(); // set character to next character
 	void skipspaces(); // set character to next non-space character
