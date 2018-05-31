@@ -1,6 +1,6 @@
 #include "gui.h"
 #include <GL/glut.h>
-#include "wx_icon.xpm"
+//#include "wx_icon.xpm"
 #include <iostream>
 
 
@@ -47,6 +47,20 @@ void MyGLCanvas::DrawMonSig(float y, float gap, int monnum, int cyclesdisplayed)
   glVertex2f(0 + w*0.1, vert0);
   glVertex2f(w - w*0.1, vert0);
   glEnd();
+  int every = 1;
+  if(cyclesdisplayed>=25 && w <= 1370) every = 10; 
+  else if(w <= 600 && cyclesdisplayed>=15) every = 10;
+  for (int i=0; i<=cyclesdisplayed; i+=every){
+	glColor3f(0.87, 0.87, 0.87);
+	glBegin(GL_LINE_STRIP);
+	glVertex2f(0 + w*0.1 + cycle_gap*i, vert0);
+	glVertex2f(0 + w*0.1 + cycle_gap*i, vert0+sigheight);
+	glEnd();
+	string number = to_string(i);
+	glColor3f(0.0, 0.0, 1.0);
+	glRasterPos2f(0 + w*0.1 + cycle_gap*i, vert0 - 10);
+	for(int j =0; j<number.size();j++)glutBitmapCharacter(GLUT_BITMAP_HELVETICA_10 , number[j]);
+  }
   
   //Draw Horizontal Axis Arrow
   glBegin(GL_TRIANGLES);
@@ -143,26 +157,11 @@ void MyGLCanvas::Render(wxString example_text, int cycles)
     //}
     //glEnd();
 
-  } else { /*// draw an artificial trace
-
-    glColor3f(1.0, 0.0, 1.0);
-    glBegin(GL_LINE_STRIP);
-    for (i=0; i<10; i++) {
-      if (i%2) y = 10.0;
-      else y = 30.0;
-      glVertex2f(20*i+10.0, y); 
-      glVertex2f(20*i+30.0, y);
-    }
-    glEnd();
-    
-    
-    */
+  } else {
+	  
+	  
   }
 
-  // Example of how to use GLUT to draw text on the canvas
-  //~ glColor3f(0.0, 0.0, 1.0);
-  //~ glRasterPos2f(10, 100);
-  //~ for (i = 0; i < example_text.Len(); i++) glutBitmapCharacter(  GLUT_BITMAP_HELVETICA_10 , example_text[i]);
 
   // We've been drawing to the back buffer, flush the graphics pipeline and swap the back buffer to the front
   glFlush();
@@ -262,7 +261,7 @@ MyFrame::MyFrame(wxWindow *parent, const wxString& title, const wxPoint& pos, co
   // Constructor - initialises pointers to names, devices and monitor classes, lays out widgets
   // using sizers
 {
-  SetIcon(wxIcon(wx_icon));
+  //SetIcon(wxIcon(wx_icon));
 
   cyclescompleted = 0;
   nmz = names_mod;
@@ -384,8 +383,9 @@ MyFrame::MyFrame(wxWindow *parent, const wxString& title, const wxPoint& pos, co
   button_sizer->Add(new wxTextCtrl(this, MY_TEXTCTRL_ID, "", wxDefaultPosition, wxDefaultSize, wxTE_PROCESS_ENTER), 0 , wxALL, 10);
   topsizer->Add(button_sizer, 0, wxALIGN_CENTER);
 
-  SetSizeHints(400, 400);
+  SetMinSize(wxSize(400,400));
   SetSizer(topsizer);
+  //SetSizeHints(400, 400);
   
 }
 

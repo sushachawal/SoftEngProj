@@ -71,6 +71,9 @@ class MyGLCanvas: public wxGLCanvas
   // Draws the monitor label from the list of monitors
   void DrawMonLabel(float x, float y, int monnum);
   
+  //Converts a 2 digit into a string to draw with OpenGL
+  string inttostring(int i);
+  
   wxGLContext *context;              // OpenGL rendering context
   bool init;                         // has the OpenGL context been initialised?
   int pan_x;                         // the current x pan
