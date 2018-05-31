@@ -339,9 +339,7 @@ MyFrame::MyFrame(wxWindow *parent, const wxString& title, const wxPoint& pos, co
   
 
   devicekind kindDevice;
-  cout << "Offset before add is "<< offset << endl;
   offset = offset + gui_sig_index + 3;
-  cout << "and after add is " << offset << endl;
   int gui_sw_index=0; 
   for (d = netz->devicelist(); d != NULL; d = d->next){
 	  device_id = d->id;
@@ -349,11 +347,9 @@ MyFrame::MyFrame(wxWindow *parent, const wxString& title, const wxPoint& pos, co
 	  kindDevice = (netz->finddevice(device_id))->kind;
 	  if(kindDevice == aswitch){
 		  GUI_ID = gui_sw_index + offset;
-		  cout << "ID you're trying to add is " << GUI_ID << endl;
 		  gui_ids_switches.push_back( GUI_ID);
 		  netw_ids_switches.push_back(device_id);
 		  switchMenu->AppendCheckItem(gui_ids_switches[gui_sw_index], nameOfDevice);
-		  cout << "Added new switch with ID " << gui_ids_switches[gui_sw_index] << endl;
 		  if(d->swstate == high){
 			  switchMenu->Check(gui_ids_switches[gui_sw_index], true);
 			  }
@@ -423,22 +419,12 @@ void MyFrame::OnButton(wxCommandEvent &event)
   }
   
   for(index = 0; index < gui_ids_switches.size(); index++){
-	cout << nmz->getname(netw_ids_switches[index]);
-	cout << " has checkbox id " << gui_ids_switches[index];
-	cout << endl;
 	ischecked = switchMenu->IsChecked(gui_ids_switches[index]);
-	string showischecked = (ischecked==false)?("False"):("True");
-	cout << nmz->getname(netw_ids_switches[index]);
-	cout << " ischecked is " << showischecked << endl;
 	if(ischecked){
 	dmz->setswitch(netw_ids_switches[index], high, ok);
-	cout << "Setting switch " << nmz->getname(netw_ids_switches[index]);
-	cout << " to high!" << endl;
 	}
 	else{
 	dmz->setswitch(netw_ids_switches[index], low, ok);
-	cout << "Setting switch " << nmz->getname(netw_ids_switches[index]);
-	cout << " to low!" << endl;
 	}
 	
   }
