@@ -352,8 +352,9 @@ MyFrame::MyFrame(wxWindow *parent, const wxString& title, const wxPoint& pos, co
 		  switchMenu->AppendCheckItem(gui_ids_switches[gui_sw_index], nameOfDevice);
 		  if(d->swstate == high){
 			  switchMenu->Check(gui_ids_switches[gui_sw_index], true);
-			  }
 		  }
+		  gui_sw_index++;
+	  }
   }
   
   menuBar->Append(switchMenu, "&Switches");
@@ -399,7 +400,7 @@ void MyFrame::OnButton(wxCommandEvent &event)
   // Event handler for the push button
 {
   int n, ncycles, index, num_monitors, dev_id_delete, sig_id_delete, monindex = 0;
-  bool ischecked, ok;
+  bool ischecked, ok, run = true;
   
   while(mmz->moncount() > 0){
 	mmz->getmonname(0, dev_id_delete, sig_id_delete);
@@ -409,8 +410,14 @@ void MyFrame::OnButton(wxCommandEvent &event)
   for(index = 0; index < gui_ids_signals.size(); index++){
 	ischecked = monitorMenu->IsChecked(gui_ids_signals[index]);
 	
-	if(ischecked){
-	mmz->makemonitor(dev_ids_signals[index], netw_ids_signals[index], ok);
+	if(ischecked && run){
+		if(mmz->moncount() < 10){
+			mmz->makemonitor(dev_ids_signals[index], netw_ids_signals[index], ok);
+		}
+		else{
+			run = false;
+			wxMessageBox( wxT("Please select a maximum of 10 monitors") );
+		}
 	}
   }
   
@@ -426,24 +433,25 @@ void MyFrame::OnButton(wxCommandEvent &event)
 	
   }
   
-  cyclescompleted = 0;
-  mmz->resetmonitor ();
-  runnetwork(spin->GetValue());
-  canvas->Render("Run button pressed", cyclescompleted);
+  if(run){
+    cyclescompleted = 0;
+    mmz->resetmonitor ();
+    runnetwork(spin->GetValue());
+    canvas->Render("Run button pressed", cyclescompleted);
+  }
 }
 
 void MyFrame::OnButton2(wxCommandEvent &event)
   // Event handler for the push button 2
 {
-  int n, ncycles, index, num_monitors, dev_id_delete, sig_id_delete;
+  int n, ncycles, index, num_monitors, dev_id_delete, sig_id_delete, maxval = 50;
   bool ischecked, ok;
   
-  
-  cyclescompleted = 0;
-  mmz->resetmonitor ();
   runnetwork(spin->GetValue());
   canvas->Render("Continue button pressed", cyclescompleted);
-  cout<<num_monitors<<" "<<mmz->moncount()<<endl;
+  if(cyclescompleted >= maxval){
+	  wxMessageBox( wxT("Maximum number of cycles reached") );
+  }
   
 }
 
@@ -470,16 +478,16 @@ void MyFrame::runnetwork(int ncycles)
   // Function to run the network, derived from corresponding function in userint.cc
 {
   bool ok = true;
-  int n = ncycles;
+  int n = 0, maxval = 50;
 
-  while ((n > 0) && ok) {
+  while ((n < ncycles) && ok && cyclescompleted + n < maxval) {
     dmz->executedevices (ok);
     if (ok) {
-      n--;
+      n++;
       mmz->recordsignals ();
     } else
       cout << "Error: network is oscillating" << endl;
   }
-  if (ok) cyclescompleted = cyclescompleted + ncycles;
+  if (ok) cyclescompleted = cyclescompleted + n;
   else cyclescompleted = 0;
 }
