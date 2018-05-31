@@ -249,7 +249,7 @@ void MyGLCanvas::OnMouse(wxMouseEvent& event)
 BEGIN_EVENT_TABLE(MyFrame, wxFrame)
   EVT_MENU(wxID_EXIT, MyFrame::OnExit)
   EVT_MENU(wxID_ABOUT, MyFrame::OnAbout)
-  EVT_MENU(MY_OPEN, MyFrame::OnOpen)
+  //EVT_MENU(MY_OPEN, MyFrame::OnOpen)
   EVT_BUTTON(MY_BUTTON_ID, MyFrame::OnButton)
   EVT_BUTTON(MY_BUTTON_ID2, MyFrame::OnButton2)
   EVT_SPINCTRL(MY_SPINCNTRL_ID, MyFrame::OnSpin)
@@ -277,7 +277,7 @@ MyFrame::MyFrame(wxWindow *parent, const wxString& title, const wxPoint& pos, co
   wxMenu *fileMenu = new wxMenu;
   fileMenu->Append(wxID_ABOUT, "&About");
   fileMenu->Append(wxID_EXIT, "&Quit");
-  fileMenu->Append(MY_OPEN, "&Open");
+  //fileMenu->Append(MY_OPEN, "&Open");
   wxMenuBar *menuBar = new wxMenuBar;
   menuBar->Append(fileMenu, "&File");
   
@@ -402,52 +402,52 @@ void MyFrame::OnAbout(wxCommandEvent &event)
   about.ShowModal();
 }
 
-void MyFrame::OnOpen(wxCommandEvent &event)
-  // Event handler for the open menu item
-{   	
-	wxFileDialog 
-		openFileDialog(this, _("Open text file"), "", "",
-									 "Text files (*.txt)|*.txt", wxFD_OPEN|wxFD_FILE_MUST_EXIST);
-	if (openFileDialog.ShowModal() == wxID_CANCEL)
-		return;     // the user changed idea...
+//void MyFrame::OnOpen(wxCommandEvent &event)
+  //// Event handler for the open menu item
+//{   	
+	//wxFileDialog 
+		//openFileDialog(this, _("Open text file"), "", "",
+									 //"Text files (*.txt)|*.txt", wxFD_OPEN|wxFD_FILE_MUST_EXIST);
+	//if (openFileDialog.ShowModal() == wxID_CANCEL)
+		//return;     // the user changed idea...
 	
-	// proceed loading the file chosen by the user;
-	// this can be done with e.g. wxWidgets input streams:
-	wxFileInputStream input_stream(openFileDialog.GetPath());
-	if (!input_stream.IsOk())
-	{
-		wxLogError("Cannot open file '%s'.", openFileDialog.GetPath());
-		return;
-	}
+	//// proceed loading the file chosen by the user;
+	//// this can be done with e.g. wxWidgets input streams:
+	//wxFileInputStream input_stream(openFileDialog.GetPath());
+	//if (!input_stream.IsOk())
+	//{
+		//wxLogError("Cannot open file '%s'.", openFileDialog.GetPath());
+		//return;
+	//}
 	
-	// check the logic file parsed correctly
-	bool ok = UpdatePointers(openFileDialog.GetPath());
-	if(ok){
-		Close(true)
-		MyFrame *frame = new MyFrame(NULL, "Logic simulator", wxDefaultPosition,  wxSize(800, 600), nmz, netz, dmz, mmz);
-		frame->Show(true);
-		return;
-	} else {
-		wxLogError("Failed to parse file '%s'.", openFileDialog.GetPath());
-		return;
-	}
-}
+	//// check the logic file parsed correctly
+	//bool ok = UpdatePointers(openFileDialog.GetPath());
+	//if(ok){
+		//Close(true)
+		//MyFrame *frame = new MyFrame(NULL, "Logic simulator", wxDefaultPosition,  wxSize(800, 600), nmz, netz, dmz, mmz);
+		//frame->Show(true);
+		//return;
+	//} else {
+		//wxLogError("Failed to parse file '%s'.", openFileDialog.GetPath());
+		//return;
+	//}
+//}
 
-bool MyFrame::UpdatePointers(wxString path)
-{
-	// Construct the six classes required by the innards of the logic simulator
-  nmz = new names();
-  netz = new network(nmz);
-  dmz = new devices(nmz, netz);
-  mmz = new monitor(nmz, netz);
-  smz = new scanner(nmz, path.mb_str());
-  pmz = new parser(netz, dmz, mmz, smz);
+//bool MyFrame::UpdatePointers(wxString path)
+//{
+	//// Construct the six classes required by the innards of the logic simulator
+  //nmz = new names();
+  //netz = new network(nmz);
+  //dmz = new devices(nmz, netz);
+  //mmz = new monitor(nmz, netz);
+  //smz = new scanner(nmz, path.mb_str());
+  //pmz = new parser(netz, dmz, mmz, smz);
  
-  if (pmz->readin ()) {
-		return true;
-	} else return false;
-	//this = new MyFrame(NULL, "Logic simulator", wxDefaultPosition,  wxSize(800, 600), nmz, netz, dmz, mmz);
-}
+  //if (pmz->readin ()) {
+		//return true;
+	//} else return false;
+	////this = new MyFrame(NULL, "Logic simulator", wxDefaultPosition,  wxSize(800, 600), nmz, netz, dmz, mmz);
+//}
 
 
 void MyFrame::OnButton(wxCommandEvent &event)

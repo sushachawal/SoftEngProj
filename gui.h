@@ -40,14 +40,10 @@ class MyFrame: public wxFrame
   devices *dmz;                           // pointer to devices class
   monitor *mmz;                           // pointer to monitor class
   network *netz;						  // pointer to network class
-  scanner *smz;							  // pointer to scanner class
-  parser *pmz;						      // pointer to parser class
   int cyclescompleted;                    // how many simulation cycles have been completed
   void runnetwork(int ncycles);           // function to run the logic network
-  bool UpdatePointers(wxString path); 	  // update pointers to file with path name path
   void OnExit(wxCommandEvent& event);     // event handler for exit menu item
   void OnAbout(wxCommandEvent& event);    // event handler for about menu item
-  void OnOpen(wxCommandEvent&  event); 	  // event handler for open menu item
   void OnButton(wxCommandEvent& event);   // event handler for push button
   void OnButton2(wxCommandEvent& event);  // event handler for push button 2
   void OnSpin(wxSpinEvent& event);        // event handler for spin control
