@@ -15,6 +15,9 @@ BEGIN_EVENT_TABLE(MyGLCanvas, wxGLCanvas)
 END_EVENT_TABLE()
   
 int wxglcanvas_attrib_list[5] = {WX_GL_RGBA, WX_GL_DOUBLEBUFFER, WX_GL_DEPTH_SIZE, 16, 0};
+vector<int> gui_ids_signals, netw_ids_signals, dev_ids_signals;
+vector<int> gui_ids_switches, netw_ids_switches;
+bool continueOn = false;
 
 MyGLCanvas::MyGLCanvas(wxWindow *parent, wxWindowID id, monitor* monitor_mod, names* names_mod, const wxPoint& pos, 
 		       const wxSize& size, long style, const wxString& name, const wxPalette& palette):
@@ -300,6 +303,7 @@ MyFrame::MyFrame(wxWindow *parent, const wxString& title, const wxPoint& pos, co
 			gui_ids_signals.push_back( GUI_ID);
 			netw_ids_signals.push_back(input_id);
 			dev_ids_signals.push_back(device_id);
+			is_monitored.push_back(false);
 			monitorLabel = nameOfDevice;
 			if(nameOfInput != "") monitorLabel += ("." +nameOfInput);
 			monitorMenu->AppendCheckItem(gui_ids_signals[gui_sig_index], monitorLabel);
@@ -308,6 +312,7 @@ MyFrame::MyFrame(wxWindow *parent, const wxString& title, const wxPoint& pos, co
 				mmz->getmonname(mon_index, mon_dev_id, mon_sig_id);
 				if(mon_dev_id == device_id && mon_sig_id == input_id){
 					monitorMenu->Check(gui_ids_signals[gui_sig_index], true);
+					is_monitored[gui_sig_index] = true;
 				}
 			}
 			
@@ -321,7 +326,7 @@ MyFrame::MyFrame(wxWindow *parent, const wxString& title, const wxPoint& pos, co
 			gui_ids_signals.push_back( GUI_ID);
 			netw_ids_signals.push_back(output_id);
 			dev_ids_signals.push_back(device_id);
-			
+			is_monitored.push_back(false);
 			monitorLabel = nameOfDevice;
 			if(nameOfOutput != "") monitorLabel += ("." + nameOfOutput);
 			monitorMenu->AppendCheckItem(gui_ids_signals[gui_sig_index], monitorLabel);
@@ -330,6 +335,7 @@ MyFrame::MyFrame(wxWindow *parent, const wxString& title, const wxPoint& pos, co
 				mmz->getmonname(mon_index, mon_dev_id, mon_sig_id);
 				if(mon_dev_id == device_id && mon_sig_id == output_id){
 					monitorMenu->Check(gui_ids_signals[gui_sig_index], true);
+					is_monitored[gui_sig_index] = true;
 				}
 			}
 			gui_sig_index++;
@@ -351,9 +357,11 @@ MyFrame::MyFrame(wxWindow *parent, const wxString& title, const wxPoint& pos, co
 		  GUI_ID = gui_sw_index + offset;
 		  gui_ids_switches.push_back( GUI_ID);
 		  netw_ids_switches.push_back(device_id);
+		  switch_on.push_back(false);
 		  switchMenu->AppendCheckItem(gui_ids_switches[gui_sw_index], nameOfDevice);
 		  if(d->swstate == high){
 			  switchMenu->Check(gui_ids_switches[gui_sw_index], true);
+			  switch_on[gui_sw_index] = true;
 			  }
           if(d->swstate == low){
 			  switchMenu->Check(gui_ids_switches[gui_sw_index], false);
@@ -375,7 +383,8 @@ MyFrame::MyFrame(wxWindow *parent, const wxString& title, const wxPoint& pos, co
 
   wxBoxSizer *button_sizer = new wxBoxSizer(wxVERTICAL);
   button_sizer->Add(new wxButton(this, MY_BUTTON_ID, "Run"), 0, wxALL, 10);
-  button_sizer->Add(new wxButton(this, MY_BUTTON_ID2, "Continue"), 0, wxALL, 10);
+  continueButton = new wxButton(this, MY_BUTTON_ID2, "Continue");
+  button_sizer->Add(continueButton, 0, wxALL, 10);
   button_sizer->Add(new wxStaticText(this, wxID_ANY, "Cycles"), 0, wxTOP|wxLEFT|wxRIGHT, 10);
   spin = new wxSpinCtrl(this, MY_SPINCNTRL_ID, wxString("10"));
   spin->SetRange(0, 50);
@@ -463,22 +472,26 @@ void MyFrame::OnButton(wxCommandEvent &event)
   
   for(index = 0; index < gui_ids_signals.size(); index++){
 	ischecked = monitorMenu->IsChecked(gui_ids_signals[index]);
+	is_monitored[index] = false;
 	
 	if(ischecked && run){
 		if(mmz->moncount() < 10){
 			mmz->makemonitor(dev_ids_signals[index], netw_ids_signals[index], ok);
+			is_monitored[index] = true;
 		}
 		else{
-			run = false;
+			run = false;		
 			wxMessageBox( wxT("Please select a maximum of 10 monitors") );
 		}
 	}
   }
   
   for(index = 0; index < gui_ids_switches.size(); index++){
+	switch_on[index] = false;
 	ischecked = switchMenu->IsChecked(gui_ids_switches[index]);
 	if(ischecked){
 	dmz->setswitch(netw_ids_switches[index], high, ok);
+	switch_on[index] = true;
 	}
 	else{
 	dmz->setswitch(netw_ids_switches[index], low, ok);
@@ -487,6 +500,7 @@ void MyFrame::OnButton(wxCommandEvent &event)
   }
   
   if(run){
+	continueOn = true;
     cyclescompleted = 0;
     mmz->resetmonitor ();
     runnetwork(spin->GetValue());
@@ -497,13 +511,34 @@ void MyFrame::OnButton(wxCommandEvent &event)
 void MyFrame::OnButton2(wxCommandEvent &event)
   // Event handler for the push button 2
 {
-  int n, ncycles, index, num_monitors, dev_id_delete, sig_id_delete, maxval = 50;
-  bool ischecked, ok;
+  int n, ncycles, index, nummons = 0, numsw = 0, maxval = 50;
+  bool ischecked, ok, ismon, ishigh;
   
-  runnetwork(spin->GetValue());
-  canvas->Render("Continue button pressed", cyclescompleted);
-  if(cyclescompleted >= maxval){
-	  wxMessageBox( wxT("Maximum number of cycles reached") );
+  for(index = 0; index < gui_ids_signals.size(); index++){
+	ischecked = monitorMenu->IsChecked(gui_ids_signals[index]);
+	ismon = is_monitored[index];
+	if(ischecked != ismon){
+		continueOn = false;
+	}
+  }
+  
+  for(index = 0; index < gui_ids_switches.size(); index++){
+	ischecked = switchMenu->IsChecked(gui_ids_switches[index]);
+	ishigh = switch_on[index];
+	if(ischecked != ishigh){
+		continueOn = false;
+	}
+  }
+  
+  if(continueOn){
+	runnetwork(spin->GetValue());
+	canvas->Render("Continue button pressed", cyclescompleted);
+	if(cyclescompleted >= maxval){
+		wxMessageBox( wxT("Maximum number of cycles reached") );
+	}
+  }
+  else{
+    wxMessageBox( wxT("Modifications made/Nothing to continue. Press run first") );
   }
   
 }

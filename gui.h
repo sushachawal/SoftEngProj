@@ -34,8 +34,9 @@ class MyFrame: public wxFrame
  private:
   MyGLCanvas *canvas;                     // OpenGL drawing area widget to draw traces
   wxSpinCtrl *spin;                       // control widget to select the number of cycles
+  wxButton *continueButton;               // pointer to the continue button
   wxMenu *monitorMenu = new wxMenu;		  // pointer to the monitor menu
-  wxMenu *switchMenu = new wxMenu;      // pointer to the switches menu
+  wxMenu *switchMenu = new wxMenu;        // pointer to the switches menu
   names *nmz;                             // pointer to names class
   devices *dmz;                           // pointer to devices class
   monitor *mmz;                           // pointer to monitor class
@@ -50,7 +51,9 @@ class MyFrame: public wxFrame
   void OnText(wxCommandEvent& event);     // event handler for text entry field
   void OnCheck(wxCommandEvent& event);    // event handler for checkbox
   vector<int> gui_ids_signals, netw_ids_signals, dev_ids_signals;
+  vector<bool> is_monitored, switch_on;
   vector<int> gui_ids_switches, netw_ids_switches;
+  bool continueOn = false;
   DECLARE_EVENT_TABLE()
 };
     
