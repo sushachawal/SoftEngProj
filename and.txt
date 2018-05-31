@@ -1,0 +1,7 @@
+SWITCH SW1 1;
+
+AND A1 1;
+
+SW1 -> A1.I1;
+
+MONITOR A1;

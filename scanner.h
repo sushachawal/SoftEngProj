@@ -14,12 +14,12 @@ typedef enum {gensym, andsym, nandsym, orsym, norsym, dtypesym, xorsym, consym, 
   namesym, numsym, eofsym, semicol, dotsym, arrowsym, badsym} symbol;
 
 class scanner {
-	
+
 	char curch; // current character
 	bool eofile; // true when end of file has been reached
 	ifstream inf; // input file to be read from
 	// names* nmz;
-	
+
 	name clkname;
 	name swtchname;
 	name andname;
@@ -30,16 +30,16 @@ class scanner {
   name xorname;
   name connectname;
   name monitorname;
-	
+
 public:
 	names* nmz;
 		
 	// this is the constructor of the scanner class
 	scanner(names* names_mod,     // pointer to names class, so scanner can use it
         const char* defname); // name of file from which to read the definitions
-	
-	~scanner(); // destructor of the class, closes input file
-	
+
+	~scanner(){}; // destructor of the class, closes input file
+
 	void getch(); // set character to next character
 	void skipspaces(); // set character to next non-space character
 	void getname(name& id); // scans the string, adds to names_mod if not already there and returns name id

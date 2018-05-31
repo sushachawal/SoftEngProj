@@ -17,7 +17,7 @@ int main(int argc, char **argv){
   monitor *mmz;
   scanner *smz;
   parser *prsr;
-  
+
   // Construct the six classes required by the innards of the logic simulator
   nmz = new names();
   netz = new network(nmz);
@@ -25,18 +25,18 @@ int main(int argc, char **argv){
   mmz = new monitor(nmz, netz);
   smz = new scanner(nmz, argv[1]);
   prsr = new parser(netz, dmz, mmz, smz);
-  
+
   bool okprsr =prsr->readin();
   bool oknetz;
   netz->checknetwork(oknetz);
   cout << "File read in?: " <<  okprsr << endl;
   cout << "Everything connected?: " << oknetz << endl;
-  
+
   // Construct the text-based interface
   if (okprsr && oknetz){
 		userint umz(nmz, dmz, mmz);
 		umz.userinterface();
 	}
-		
+
   return 0;
 }
