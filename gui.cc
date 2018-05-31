@@ -421,8 +421,9 @@ void MyFrame::OnOpen(wxCommandEvent &event)
 	// check the logic file parsed correctly
 	bool ok = UpdatePointers(openFileDialog.GetPath());
 	if(ok){
-    //MyFrame *frame = new MyFrame(NULL, "Logic simulator", wxDefaultPosition,  wxSize(800, 600), nmz, netz, dmz, mmz);
-    //frame->Show(true);
+		Close(true)
+		MyFrame *frame = new MyFrame(NULL, "Logic simulator", wxDefaultPosition,  wxSize(800, 600), nmz, netz, dmz, mmz);
+		frame->Show(true);
 		return;
 	} else {
 		wxLogError("Failed to parse file '%s'.", openFileDialog.GetPath());
@@ -443,7 +444,7 @@ bool MyFrame::UpdatePointers(wxString path)
   if (pmz->readin ()) {
 		return true;
 	} else return false;
-	this = new MyFrame(NULL, "Logic simulator", wxDefaultPosition,  wxSize(800, 600), nmz, netz, dmz, mmz);
+	//this = new MyFrame(NULL, "Logic simulator", wxDefaultPosition,  wxSize(800, 600), nmz, netz, dmz, mmz);
 }
 
 
