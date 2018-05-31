@@ -16,7 +16,6 @@
 
 enum MyEnum{
   MY_SPINCNTRL_ID = wxID_HIGHEST + 1,
-  MY_TEXTCTRL_ID,
   MY_OPEN,
   MY_BUTTON_ID,
   MY_BUTTON_ID2,
@@ -48,7 +47,6 @@ class MyFrame: public wxFrame
   void OnButton(wxCommandEvent& event);   // event handler for push button
   void OnButton2(wxCommandEvent& event);  // event handler for push button 2
   void OnSpin(wxSpinEvent& event);        // event handler for spin control
-  void OnText(wxCommandEvent& event);     // event handler for text entry field
   void OnCheck(wxCommandEvent& event);    // event handler for checkbox
   vector<int> gui_ids_signals, netw_ids_signals, dev_ids_signals;
   vector<bool> is_monitored, switch_on;

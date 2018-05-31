@@ -15,9 +15,6 @@ BEGIN_EVENT_TABLE(MyGLCanvas, wxGLCanvas)
 END_EVENT_TABLE()
   
 int wxglcanvas_attrib_list[5] = {WX_GL_RGBA, WX_GL_DOUBLEBUFFER, WX_GL_DEPTH_SIZE, 16, 0};
-vector<int> gui_ids_signals, netw_ids_signals, dev_ids_signals;
-vector<int> gui_ids_switches, netw_ids_switches;
-bool continueOn = false;
 
 MyGLCanvas::MyGLCanvas(wxWindow *parent, wxWindowID id, monitor* monitor_mod, names* names_mod, const wxPoint& pos, 
 		       const wxSize& size, long style, const wxString& name, const wxPalette& palette):
@@ -255,7 +252,6 @@ BEGIN_EVENT_TABLE(MyFrame, wxFrame)
   EVT_BUTTON(MY_BUTTON_ID, MyFrame::OnButton)
   EVT_BUTTON(MY_BUTTON_ID2, MyFrame::OnButton2)
   EVT_SPINCTRL(MY_SPINCNTRL_ID, MyFrame::OnSpin)
-  EVT_TEXT_ENTER(MY_TEXTCTRL_ID, MyFrame::OnText)
 END_EVENT_TABLE()
   
 MyFrame::MyFrame(wxWindow *parent, const wxString& title, const wxPoint& pos, const wxSize& size,
@@ -389,7 +385,6 @@ MyFrame::MyFrame(wxWindow *parent, const wxString& title, const wxPoint& pos, co
   spin->SetRange(0, 50);
   button_sizer->Add(spin, 0 , wxALL, 10);
   
-  button_sizer->Add(new wxTextCtrl(this, MY_TEXTCTRL_ID, "", wxDefaultPosition, wxDefaultSize, wxTE_PROCESS_ENTER), 0 , wxALL, 10);
   topsizer->Add(button_sizer, 0, wxALIGN_CENTER);
 
   SetMinSize(wxSize(400,400));
@@ -407,7 +402,7 @@ void MyFrame::OnExit(wxCommandEvent &event)
 void MyFrame::OnAbout(wxCommandEvent &event)
   // Event handler for the about menu item
 {
-  wxMessageDialog about(this, "Example wxWidgets GUI\nAndrew Gee\nJune 2014", "About Logsim", wxICON_INFORMATION | wxOK);
+  wxMessageDialog about(this, "Logic Simulator\nAuthors: Vlad Tomescu, Matt Ashman, Sushant Achawal\nMay 2018", "About Logic Simulator.", wxICON_INFORMATION | wxOK);
   about.ShowModal();
 }
 
@@ -552,14 +547,6 @@ void MyFrame::OnSpin(wxSpinEvent &event)
   canvas->Render(text);
 }
 
-void MyFrame::OnText(wxCommandEvent &event)
-  // Event handler for the text entry field
-{
-  wxString text;
-
-  text.Printf("New text entered %s", event.GetString().c_str());
-  canvas->Render(text);
-}
 
 
 void MyFrame::runnetwork(int ncycles)
