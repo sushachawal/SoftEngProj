@@ -172,7 +172,6 @@ void MyGLCanvas::InitGL()
   // Function to initialise the GL context
 {
   //int w, h;
-
   GetClientSize(&w, &h);
   SetCurrent(*context);
   glDrawBuffer(GL_BACK);
@@ -251,6 +250,7 @@ BEGIN_EVENT_TABLE(MyFrame, wxFrame)
   //EVT_MENU(MY_OPEN, MyFrame::OnOpen)
   EVT_BUTTON(MY_BUTTON_ID, MyFrame::OnButton)
   EVT_BUTTON(MY_BUTTON_ID2, MyFrame::OnButton2)
+  EVT_BUTTON(HOME_BUTTON, MyFrame::OnHomeButton)
   EVT_SPINCTRL(MY_SPINCNTRL_ID, MyFrame::OnSpin)
 END_EVENT_TABLE()
   
@@ -379,7 +379,9 @@ MyFrame::MyFrame(wxWindow *parent, const wxString& title, const wxPoint& pos, co
   wxBoxSizer *button_sizer = new wxBoxSizer(wxVERTICAL);
   button_sizer->Add(new wxButton(this, MY_BUTTON_ID, "Run"), 0, wxALL, 10);
   continueButton = new wxButton(this, MY_BUTTON_ID2, "Continue");
+  homeButton = new wxButton(this, HOME_BUTTON, "Return View");
   button_sizer->Add(continueButton, 0, wxALL, 10);
+  button_sizer->Add(homeButton,0, wxALL, 10);
   button_sizer->Add(new wxStaticText(this, wxID_ANY, "Cycles"), 0, wxTOP|wxLEFT|wxRIGHT, 10);
   spin = new wxSpinCtrl(this, MY_SPINCNTRL_ID, wxString("10"));
   spin->SetRange(0, 50);
@@ -538,13 +540,22 @@ void MyFrame::OnButton2(wxCommandEvent &event)
   
 }
 
+void MyFrame::OnHomeButton(wxCommandEvent &event)
+
+{
+  canvas->SetXPan(0);
+  canvas->SetYPan(0);
+  canvas->SetZoom(1.0);
+  canvas->SetInit(false);
+  canvas->Render();
+}
+
 void MyFrame::OnSpin(wxSpinEvent &event)
   // Event handler for the spin control
 {
   wxString text;
 
   text.Printf("New spinctrl value %d", event.GetPosition());
-  canvas->Render(text);
 }
 
 

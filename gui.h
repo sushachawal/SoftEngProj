@@ -19,6 +19,7 @@ enum MyEnum{
   MY_OPEN,
   MY_BUTTON_ID,
   MY_BUTTON_ID2,
+  HOME_BUTTON,
   MY_MAX_ID = wxID_HIGHEST + 1000,
 }; // widget identifiers
 
@@ -34,6 +35,7 @@ class MyFrame: public wxFrame
   MyGLCanvas *canvas;                     // OpenGL drawing area widget to draw traces
   wxSpinCtrl *spin;                       // control widget to select the number of cycles
   wxButton *continueButton;               // pointer to the continue button
+  wxButton *homeButton;					  // pointer to the home button
   wxMenu *monitorMenu = new wxMenu;		  // pointer to the monitor menu
   wxMenu *switchMenu = new wxMenu;        // pointer to the switches menu
   names *nmz;                             // pointer to names class
@@ -48,6 +50,7 @@ class MyFrame: public wxFrame
   void OnButton2(wxCommandEvent& event);  // event handler for push button 2
   void OnSpin(wxSpinEvent& event);        // event handler for spin control
   void OnCheck(wxCommandEvent& event);    // event handler for checkbox
+  void OnHomeButton(wxCommandEvent &event);
   vector<int> gui_ids_signals, netw_ids_signals, dev_ids_signals;
   vector<bool> is_monitored, switch_on;
   vector<int> gui_ids_switches, netw_ids_switches;
@@ -62,6 +65,10 @@ class MyGLCanvas: public wxGLCanvas
 	     const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxDefaultSize, long style = 0,
 	     const wxString& name = "MyGLCanvas", const wxPalette &palette=wxNullPalette); // constructor
   void Render(wxString example_text = "", int cycles = -1); // function to draw canvas contents
+  void SetZoom(double z){zoom = z;}
+  void SetXPan(int px){pan_x = px;}
+  void SetYPan(int py){pan_y = py;}
+  void SetInit(bool in){init = in;}
  private:
   int w, h;							 // Window width and height
   
