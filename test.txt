@@ -1,13 +1,12 @@
 CLOCK CK 1; % TEST COMMENT
 % BLAH BLAH BLAH BLAH
 %% Miltiline comment here
-we go how will it do %%
+we go how will it do %%	
 SWITCH SW 0;
 DTYPE A;
 DTYPE B;
 DTYPE C;
 DTYPE D;
-OR OR1 16;
 
 SW -> A.CLEAR;
 SW -> A.SET;
