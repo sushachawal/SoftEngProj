@@ -441,9 +441,8 @@ devicekind devices::devkind (name id)
 {
   devicekind d;
   d = aswitch;
-  while ((d != baddevice) && (dtab[d] != id)){
+  while ((d != baddevice) && (dtab[d] != id))
     d = static_cast<devicekind>(d + 1);
-	}
   return (d);
 }
 

@@ -12,15 +12,18 @@ scanner::scanner(names* names_mod, const char* defname)
 
 	nmz = names_mod;
 	eofile = false;
+  symcount = 0;
 
 	clkname = nmz->lookup("CLOCK");
 	swtchname = nmz->lookup("SWITCH");
+  rcname = nmz->lookup("RC");
 	andname = nmz->lookup("AND");
 	nandname = nmz->lookup("NAND");
 	orname = nmz->lookup("OR");
 	norname = nmz->lookup("NOR");
 	dtypename = nmz->lookup("DTYPE");
 	xorname = nmz->lookup("XOR");
+  notname = nmz->lookup("NOT");
 	monitorname = nmz->lookup("MONITOR");
 
 	inf.open(defname);
@@ -39,6 +42,9 @@ void scanner::getch()
 
 void scanner::skipspaces()
 {
+  if (eofile) {
+    return;
+  }
 	while (isspace(curch)) {
 		getch();
     if (eofile){
@@ -55,11 +61,11 @@ void scanner::skipspaces()
 					if (curch == '%') break;
 				}
 			}
-		} else {
+    }else {
 			while (curch != '\n' && !eofile) {
 				getch();
-			}	
-		}
+			}
+    }
 		skipspaces();	
 	}
 }
@@ -102,41 +108,57 @@ void scanner::getsymbol(symbol& s, name& id, int& num)
 	skipspaces();
 	if (eofile) {// end of file:
 		s = eofsym;
+    symcount ++;
 	}
 	else {
 		if (isdigit(curch)) { // number:
 			s=numsym;
 			getnumber(num);
+      symcount ++;
 		}
 		else {
 			if (isalpha(curch)) { // name or keyword:
 				getname(id);
-				if (id == clkname || id == swtchname){
+				if (id == clkname || id == swtchname || id == rcname){
 					s=gensym;
+          symcount ++;
 				} else{
 					if (id == andname){
 						s = andsym;
+            symcount ++;
 					} else {
 						if (id == nandname){
 						  s = nandsym;
+              symcount ++;
 						} else {
 						  if (id == orname){
 							s = orsym;
+                symcount ++;
 						  } else {
 								if (id == norname){
 									s = norsym;
+                  symcount ++;
 								} else {
 									if (id == dtypename) {
 									s = dtypesym;
+                    symcount ++;
 									} else {
 										if (id == xorname) {
 											s = xorsym;
+                      symcount ++;
 										} else {
-											if (id == monitorname) {
-												s=monsym;
-											} else {
-												s=namesym; // not a keyword
-											}
+                      if (id == notname) {
+                        s = notsym;
+                        symcount ++;
+                      } else {
+                        if (id == monitorname) {
+                          s=monsym;
+                          symcount ++;
+                        } else {
+                          s=namesym; // not a keyword
+                          symcount ++;
+                        }
+                      }
 										}
 									}
 								}
@@ -145,21 +167,23 @@ void scanner::getsymbol(symbol& s, name& id, int& num)
 					}
 				}
 			}else { //Neither a name nor a number:
-                if (curch == '-') {
-                    getch();
-                    if (curch == '>') {
-                        s = arrowsym;
-                    } else {
-                        s = badsym;
-                    }
+              if (curch == '-') {
+                getch();
+                if (curch == '>') {
+                  s = arrowsym;
+                  symcount ++;
                 } else {
-                    switch(curch) {
-                        case ';': s=semicol; break;
-                        case '.': s=dotsym; break;
-                        default: s=badsym; break;
-                    }
+                  s = badsym;
+                  symcount ++;
                 }
-				getch();
+              } else {
+                switch(curch) {
+                  case ';': s=semicol; break;
+                  case '.': s=dotsym; break;
+                  default: s=badsym; break;
+                }
+              }
+        getch();
 			}
 		}
 	}
@@ -181,6 +205,11 @@ bool scanner::checksemicol()
 
 void scanner::reporterror()
 {
+  // first check if file is empty
+  if (symcount == 0){
+    cout << "Empty file" << endl;
+    return;
+  }
 	//cout << "Error starts at:" << int(curch) << endl;
   string line_str;
   string report_str = "";
@@ -190,7 +219,12 @@ void scanner::reporterror()
   char c;
 
   int pos = inf.tellg(); // store current positon
-
+  
+  if (pos == -1) {          // file isn't empty, so this is end of file.
+    inf.seekg(0, ios::end);  // go to the last character.
+    pos == inf.tellg();     // store position of the last character
+  }
+  
   inf.seekg(0, inf.beg); // go to the beginning of the file
   
   while(counter<pos){
@@ -226,5 +260,5 @@ void scanner::reporterror()
   cout << endl << "Line: " << line << " Character: " << c_count << endl;
   cout << line_str << endl;
   cout << report_str << endl;
-	//cout << "Character starting from last error is:" << curch << endl;
+  return;
 }
