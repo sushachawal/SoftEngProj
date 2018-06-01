@@ -7,7 +7,7 @@
 
 typedef enum {falling, low, rising, high} asignal;
 typedef enum {aswitch, aclock, andgate, nandgate, orgate,
-	      norgate, xorgate, dtype, baddevice} devicekind;
+	      norgate, xorgate, dtype, rc, baddevice} devicekind;
 
 struct outputrec {
   name       id;

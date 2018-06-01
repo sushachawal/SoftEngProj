@@ -160,6 +160,26 @@ void devices::makedtype (name id)
   d->memory = low;
 }
 
+/***********************************************************************
+ *
+ * Used to make new D-type bistable devices.
+ * Inputs: D, clock, preset and clear.
+ * Outputs: Q, QBAR.
+ * Called by makedevice.
+ *
+ */
+void devices::makerc (name id, int hightime, bool &ok)
+{
+  devlink d;
+  netz->adddevice (dtype, id, d);
+  netz->addinput (d, datapin);
+  netz->addinput (d, clkpin);
+  netz->addinput (d, setpin);
+  netz->addinput (d, clrpin);
+  netz->addoutput (d, qpin);
+  netz->addoutput (d, qbarpin);
+  d->memory = low;
+}
 
 /***********************************************************************
  *
@@ -190,6 +210,9 @@ void devices::makedevice (devicekind dkind, name did, int variant, bool& ok)
     case dtype:
       makedtype(did);
       break;
+    case rc:
+	  makerc(did, variant, ok);
+	  break;
   }
 }
 
