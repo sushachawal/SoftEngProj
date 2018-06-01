@@ -1,2 +1,2 @@
 $£SWITCH S1 0
-CLK $u£H 4
+CLOCK $u£H 4

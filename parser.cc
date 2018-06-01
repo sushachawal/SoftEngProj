@@ -24,6 +24,7 @@ bool parser::readin (void)
 {
   stage = 1;
   parsed = false;
+  oknetz = false;
   errorcount = 0;
   smz->getsymbol(cursym, curid, curnum); // gets first symbol. makes initialisation compatable with error recovery.
   while(!parsed){
@@ -41,7 +42,8 @@ bool parser::readin (void)
       recover();
     }
   }
-  if (errorcount == 0){
+  netz->checknetwork(oknetz);
+  if (errorcount == 0 && oknetz){
     return true;
   } else return false;
 }
