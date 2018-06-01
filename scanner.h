@@ -10,7 +10,7 @@ using namespace std;
 
 /* Symbol specification */
 
-typedef enum {gensym, andsym, nandsym, orsym, norsym, dtypesym, xorsym, consym, monsym,
+typedef enum {gensym, andsym, nandsym, orsym, norsym, dtypesym, xorsym, notsym, rcsym, consym, monsym,
   namesym, numsym, eofsym, semicol, dotsym, arrowsym, badsym} symbol;
 
 class scanner {
@@ -19,6 +19,7 @@ class scanner {
 	bool eofile; // true when end of file has been reached
 	ifstream inf; // input file to be read from
 	// names* nmz;
+  int symcount;
 
 	name clkname;
 	name swtchname;
@@ -28,6 +29,8 @@ class scanner {
   name norname;
   name dtypename;
   name xorname;
+  name notname;
+  name rcname;
   name connectname;
   name monitorname;
 

@@ -108,6 +108,8 @@ void parser::recover(void){
       case(norsym):
       case(dtypesym):
       case(xorsym):
+      case(notsym):
+      case(rcsym):
         stage = 2;
         break;
       case(namesym): // can only be namesym after ; if connection
@@ -187,15 +189,40 @@ void parser::generator(void){
         } else throw parser_exception("Error: 'SWITCH' initial state may only take values '1' or '0'.");
       } else throw parser_exception("Error: 'SWITCH' initial state must be specified as either '1' or '0'.");
     } else throw parser_exception("Error: Error: invalid device name. Device names may only contain letters or digits may not take the form of command words  'CLOCK', 'AND', 'MONITOR' etc.");
-  } else throw parser_exception("Error: this should never happen");
+  } /*else if (curid == smz->nmz->lookup("RC")) {
+    smz->getsymbol(cursym, curid, curnum);
+    if(cursym == namesym){                  // Check namesym after gensym
+      smz->getsymbol(cursym, curid, curnum);
+      if (cursym == numsym){                // Check numsym after namesym
+        if(curnum >= 0){                              // Check if number is valid
+          cout << "Making 'RC' device ";
+          smz->nmz->writename(curid);
+          cout << endl;
+          devid = curid;
+          devnum = curnum;
+          checkendsym();                                    // Don't make device if no semicol;
+          if(errorcount == 0){
+            if(!netz->finddevice(devid)){
+              dmz->makedevice(rc, devid, devnum, ok); // Make 'RC' device
+              if(!ok){
+                throw parser_exception("Error: failed to make 'RC' device.");
+              }
+            } else throw parser_exception("Error: device already exists!");
+          }
+          smz->getsymbol(cursym, curid, curnum);
+        } else throw parser_exception("Error: 'RC' time constant must be greater than 0.");
+      } else throw parser_exception("Error: 'RC' time constant must be specified.");
+    } else throw parser_exception("Error: invalid device name. Device names may only contain letters or digits may not take the form of command words  'CLOCK', 'AND', 'MONITOR' etc.");
+  } */
+  else throw parser_exception("Error: this should never happen");
 }
 
 void parser::devs(){
-  if(cursym == andsym||cursym == nandsym||cursym == orsym||cursym == norsym||cursym == dtypesym||cursym == xorsym) {     // Must be at least one device
+  if(cursym == andsym||cursym == nandsym||cursym == orsym||cursym == norsym||cursym == dtypesym||cursym == xorsym||cursym == notsym||cursym == rcsym) {     // Must be at least one device
 	  dev();
   } else throw parser_exception("Error: at least one valid device type must be defined. Valid device types are: 'AND', 'NAND', 'OR', 'NOR', 'DTYPE', 'XOR'.");
 
-  while(cursym == andsym||cursym == nandsym||cursym == orsym||cursym == norsym||cursym == dtypesym||cursym == xorsym){   // No limit on num. devices
+  while(cursym == andsym||cursym == nandsym||cursym == orsym||cursym == norsym||cursym == dtypesym||cursym == xorsym||cursym == notsym||cursym == rcsym){   // No limit on num. devices
     dev();
   }
 }
@@ -213,6 +240,8 @@ void parser::dev(void){
     case(dtypesym): dtype_();
       break;
     case(xorsym): Xor();
+      break;
+    case(notsym): Not();
       break;
     default: throw parser_exception("Error: this definetly shouldn't happen");
       break;
@@ -288,6 +317,31 @@ void parser::Xor(void){
         dmz->makedevice(xorgate, devid, blankname, ok);
         if(!ok){
           throw parser_exception("Error: failed to make 'XOR'' device");
+        }
+      } else throw parser_exception("Error: device already exists!");
+    }
+    smz->getsymbol(cursym, curid, curnum);
+  } else throw parser_exception("Error: invalid device name. Device names may only contain letters or digits may not take the form of command words  'CLOCK', 'AND', 'MONITOR' etc.");
+}
+
+void parser::Not(void){
+  bool ok;
+  name devid;
+  int devnum;
+  
+  smz->getsymbol(cursym, curid, curnum);
+  if(cursym == namesym){
+    cout << "Making 'NOT' device ";
+    smz->nmz->writename(curid);
+    devid = curid;
+    devnum = curnum;
+    cout << endl;
+    checkendsym();
+    if(errorcount == 0){
+      if(!netz->finddevice(devid)){
+        dmz->makedevice(nandgate, devid, 1, ok);
+        if(!ok){
+          throw parser_exception("Error: failed to make 'NOT' device");
         }
       } else throw parser_exception("Error: device already exists!");
     }
