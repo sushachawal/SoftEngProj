@@ -121,7 +121,7 @@ void devices::makegate (devicekind dkind, name did, int ninputs, bool& ok)
   devlink d;
   int n;
   namestring iname;
-  ok = (ninputs <= maxinputs);
+  ok = (ninputs <= maxinputs && ninputs >0);
   if (ok) {
     netz->adddevice (dkind, did, d);
     netz->addoutput (d, blankname);
