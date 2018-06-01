@@ -379,7 +379,7 @@ MyFrame::MyFrame(wxWindow *parent, const wxString& title, const wxPoint& pos, co
   wxBoxSizer *button_sizer = new wxBoxSizer(wxVERTICAL);
   button_sizer->Add(new wxButton(this, MY_BUTTON_ID, "Run"), 0, wxALL, 10);
   continueButton = new wxButton(this, MY_BUTTON_ID2, "Continue");
-  homeButton = new wxButton(this, HOME_BUTTON, "Return View");
+  homeButton = new wxButton(this, HOME_BUTTON, "Reset View");
   button_sizer->Add(continueButton, 0, wxALL, 10);
   button_sizer->Add(homeButton,0, wxALL, 10);
   button_sizer->Add(new wxStaticText(this, wxID_ANY, "Cycles"), 0, wxTOP|wxLEFT|wxRIGHT, 10);
