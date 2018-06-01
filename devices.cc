@@ -171,14 +171,9 @@ void devices::makedtype (name id)
 void devices::makerc (name id, int hightime, bool &ok)
 {
   devlink d;
-  netz->adddevice (dtype, id, d);
-  netz->addinput (d, datapin);
-  netz->addinput (d, clkpin);
-  netz->addinput (d, setpin);
-  netz->addinput (d, clrpin);
-  netz->addoutput (d, qpin);
-  netz->addoutput (d, qbarpin);
-  d->memory = low;
+  netz->adddevice (rc, id, d);
+  netz->addoutput (d, blankname);
+  
 }
 
 /***********************************************************************
