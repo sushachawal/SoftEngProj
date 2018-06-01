@@ -50,6 +50,7 @@ class parser {
   void logic(devicekind dkind);
   void dtype_(void);
   void Xor(void);
+  void Not(void);
   void connections(void);
   void output(name outdev, name& outsig);
   void input(name indev, name& insig);
