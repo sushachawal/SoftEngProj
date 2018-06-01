@@ -25,10 +25,12 @@ class devices{
   asignal inv (asignal s);
   void execswitch (devlink d);
   void execgate (devlink d, asignal x, asignal y);
+  void execrc(devlink d);
   void execxorgate(devlink d);
   void execdtype (devlink d);
   void execclock(devlink d);
   void updateclocks (void);
+  void updatercs (void);
   void outsig (asignal s);
 
 public:

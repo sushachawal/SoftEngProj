@@ -173,6 +173,8 @@ void devices::makerc (name id, int hightime, bool &ok)
   devlink d;
   netz->adddevice (rc, id, d);
   netz->addoutput (d, blankname);
+  d->endtime = hightime;
+  d->counter =0;
   
 }
 
@@ -348,6 +350,19 @@ void devices::execclock(devlink d)
   }
 }
 
+/***********************************************************************
+ *
+ * Used to simulate the operation of rc devices.
+ * Called by executedevices.
+ *
+ */
+void devices::execrc(devlink d)
+{
+  if (d->olist->sig == falling)
+    signalupdate (low, d->olist->sig);
+  else signalupdate(high, d->olist->sig);
+}
+
 
 /***********************************************************************
  *
@@ -373,6 +388,26 @@ void devices::updateclocks (void)
   }
 }
 
+/***********************************************************************
+ *
+ * Increment the counters in the rc devices and initiate changes
+ * in their outputs when the end of their period is reached.
+ * Called by executedevices.
+ *
+ */
+void devices::updatercs (void)
+{
+  devlink d;
+  for (d = netz->devicelist (); d != NULL; d = d->next) {
+    if (d->kind == rc) {
+      if (d->counter == d->endtime) {
+		  d->olist->sig = falling;
+      }
+      (d->counter)++;
+    }
+  }
+}
+
 
 /***********************************************************************
  *
@@ -388,6 +423,10 @@ void devices::initdevices (void)
       else d->olist->sig = high;
       d->counter = rand()%d->frequency;
     }
+    if(d->kind == rc) {
+		d->olist->sig = high;
+		d->counter = 0;
+	}
     if (d->kind == dtype)
       if (rand()%2) d->memory = low;
       else d->memory = high;
@@ -410,6 +449,7 @@ void devices::executedevices (bool& ok)
   if (debugging)
     cout << "Start of execution cycle" << endl;
   updateclocks ();
+  updatercs();
   machinecycle = 0;
   do {
     machinecycle++;
@@ -425,7 +465,8 @@ void devices::executedevices (bool& ok)
         case andgate:  execgate (d, high, high); break;
         case nandgate: execgate (d, high, low);  break;
         case xorgate:  execxorgate (d);          break;
-        case dtype:    execdtype (d);            break;     
+        case dtype:    execdtype (d);            break;
+        case rc: 	   execrc (d);				 break;     
       }
       if (debugging)
 	showdevice (d);

@@ -31,6 +31,7 @@ struct devicerec {
   asignal swstate;      // used when kind == aswitch
   int frequency;        // used when kind == aclock
   int counter;          // used when kind == aclock
+  int endtime;			// used when kind == rc
   asignal memory;       // used when kind == dtype
 };
 typedef devicerec* devlink;
