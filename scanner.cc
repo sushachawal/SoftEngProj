@@ -42,9 +42,9 @@ void scanner::skipspaces()
 {
 	while (isspace(curch)) {
 		getch();
-    if (eofile){
-      break;
-    }
+		if (eofile){
+		  break;
+		}
 	}
 }
 
@@ -169,13 +169,15 @@ bool scanner::checksemicol()
 
 void scanner::reporterror()
 {
-	//cout << "Error starts at:" << int(curch) << endl;
   string line_str;
   string report_str = "";
   int counter = 0;
   int line = 0; // line counter
   int c_count = 0; // character counter, reset every line
   char c;
+
+	//TODO: Can put c_count and line count here! This decouples it from the normal
+	// scanning to make the code more versatile.
 
   int pos = inf.tellg(); // store current positon
 
@@ -214,5 +216,4 @@ void scanner::reporterror()
   cout << endl << "Line: " << line << " Character: " << c_count << endl;
   cout << line_str << endl;
   cout << report_str << endl;
-	//cout << "Character starting from last error is:" << curch << endl;
 }
