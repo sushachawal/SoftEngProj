@@ -247,6 +247,7 @@ void MyGLCanvas::OnMouse(wxMouseEvent& event)
 BEGIN_EVENT_TABLE(MyFrame, wxFrame)
   EVT_MENU(wxID_EXIT, MyFrame::OnExit)
   EVT_MENU(wxID_ABOUT, MyFrame::OnAbout)
+  EVT_MENU(MY_ROMANIAN_ID, MyFrame::OnRomanian)
   //EVT_MENU(MY_OPEN, MyFrame::OnOpen)
   EVT_BUTTON(MY_BUTTON_ID, MyFrame::OnButton)
   EVT_BUTTON(MY_BUTTON_ID2, MyFrame::OnButton2)
@@ -271,10 +272,14 @@ MyFrame::MyFrame(wxWindow *parent, const wxString& title, const wxPoint& pos, co
     cout << "Cannot operate GUI without names, network, devices and monitor classes" << endl;
     exit(1);
   }
-
+  
   wxMenu *fileMenu = new wxMenu;
+  wxMenu *languageMenu = new wxMenu;
+  languageMenu->AppendCheckItem(MY_ROMANIAN_ID, "&Romanian");
+  fileMenu->AppendSubMenu(languageMenu, "&Languages");
   fileMenu->Append(wxID_ABOUT, "&About");
   fileMenu->Append(wxID_EXIT, "&Quit");
+
   //fileMenu->Append(MY_OPEN, "&Open");
   wxMenuBar *menuBar = new wxMenuBar;
   menuBar->Append(fileMenu, "&File");
@@ -408,52 +413,26 @@ void MyFrame::OnAbout(wxCommandEvent &event)
   about.ShowModal();
 }
 
-//void MyFrame::OnOpen(wxCommandEvent &event)
-  //// Event handler for the open menu item
-//{   	
-	//wxFileDialog 
-		//openFileDialog(this, _("Open text file"), "", "",
-									 //"Text files (*.txt)|*.txt", wxFD_OPEN|wxFD_FILE_MUST_EXIST);
-	//if (openFileDialog.ShowModal() == wxID_CANCEL)
-		//return;     // the user changed idea...
-	
-	//// proceed loading the file chosen by the user;
-	//// this can be done with e.g. wxWidgets input streams:
-	//wxFileInputStream input_stream(openFileDialog.GetPath());
-	//if (!input_stream.IsOk())
-	//{
-		//wxLogError("Cannot open file '%s'.", openFileDialog.GetPath());
-		//return;
-	//}
-	
-	//// check the logic file parsed correctly
-	//bool ok = UpdatePointers(openFileDialog.GetPath());
-	//if(ok){
-		//Close(true)
-		//MyFrame *frame = new MyFrame(NULL, "Logic simulator", wxDefaultPosition,  wxSize(800, 600), nmz, netz, dmz, mmz);
-		//frame->Show(true);
-		//return;
-	//} else {
-		//wxLogError("Failed to parse file '%s'.", openFileDialog.GetPath());
-		//return;
-	//}
-//}
 
-//bool MyFrame::UpdatePointers(wxString path)
-//{
-	//// Construct the six classes required by the innards of the logic simulator
-  //nmz = new names();
-  //netz = new network(nmz);
-  //dmz = new devices(nmz, netz);
-  //mmz = new monitor(nmz, netz);
-  //smz = new scanner(nmz, path.mb_str());
-  //pmz = new parser(netz, dmz, mmz, smz);
- 
-  //if (pmz->readin ()) {
-		//return true;
-	//} else return false;
-	////this = new MyFrame(NULL, "Logic simulator", wxDefaultPosition,  wxSize(800, 600), nmz, netz, dmz, mmz);
-//}
+void MyFrame::OnRomanian(wxCommandEvent &event)
+  // Event handler for the language menu item
+{
+  //wxTranslations *transl = new wxTranslations();
+  //transl->SetLanguage(wxLANGUAGE_ROMANIAN);
+  //bool is_added, is_loaded;
+  //is_added = transl->AddCatalog("&Rom_domain", wxLANGUAGE_ROMANIAN);
+  //cout<<is_added<<endl;
+  //is_loaded = transl->IsLoaded("&Rom_domain");
+  //cout<<is_loaded<<endl;
+  //const wxString *finalstr = new const wxString();
+  //wxString origstr = wxString::FromUTF8("salut");
+  //*origstr = "salut";
+  //finalstr = transl->GetTranslatedString("&salut", "&Rom_domain");
+  //cout<<*finalstr;
+  //wxMessageDialog about(this, "Language chosen: Romanian", "Language", wxICON_INFORMATION | wxOK);
+  //about.ShowModal();
+}
+
 
 
 void MyFrame::OnButton(wxCommandEvent &event)
