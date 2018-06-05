@@ -33,6 +33,21 @@ MyGLCanvas::MyGLCanvas(wxWindow *parent, wxWindowID id, monitor* monitor_mod, na
   GetClientSize(&w, &h);
 }
 
+/***********************************************************************
+ * Authors: Sushant Achawal and Matt Ashman
+ * 
+ * Draws a monitor signal at position x, y -
+ * The number of cycles is passed as a parameter and the monitor
+ * trace for the monitor number passed in, is displayed. Includes axes
+ * which scale on window resizing and graph ticks which vary on window
+ * resizing and cylces displayed. The height each monitor signal
+ * occupies is also passed in as a parameter.
+ *
+ * @params: (x,y) of bottom left of monitor window,
+ *          gap: height of monitor window,
+ *          monnum: The index for the monitor being drawn
+ *          cyclesdisplayed: No. of cycles to display
+ */
 void MyGLCanvas::DrawMonSig(float y, float gap, int monnum, int cyclesdisplayed)
 {
   //Draw the axes:
@@ -134,6 +149,14 @@ void MyGLCanvas::DrawMonSig(float y, float gap, int monnum, int cyclesdisplayed)
   
 }
 
+/***********************************************************************
+ * Authors: Sushant Achawal and Matt Ashman
+ * 
+ * Draws the monitor name at position x, y i.e. labels vertical axis
+ *
+ * @params: (x,y) of position to draw monitor name,
+ *          monnum: The index for the monitor being drawn
+ */
 void MyGLCanvas::DrawMonLabel(float x, float y, int monnum){
   name monname, pin;
   mmz-> getmonname(monnum, monname, pin);
@@ -148,16 +171,13 @@ void MyGLCanvas::DrawMonLabel(float x, float y, int monnum){
 }
 
 /***********************************************************************
- * Author: Sushant
+ * Author: Sushant Achawal
  * 
  * Draws canvas contents -
  * When the simulator is run, the number of cycles is passed as a parameter and the monitor
  * traces are displayed.
  *
- * @param cycles, example_test (deprecated)
- *
- * @return bool true if the parsing was successful without any syntax
- * or semantic errors and false if there were some errors.
+ * @param cycles
  *
  */
 void MyGLCanvas::Render(int cycles)
@@ -529,6 +549,13 @@ void MyFrame::OnButton2(wxCommandEvent &event)
   
 }
 
+/***********************************************************************
+ * Author: Sushant Achawal
+ * 
+ * Event handler for pressing "Reset View" -
+ * Resets view to default view on starting the application.
+ *
+ */
 void MyFrame::OnHomeButton(wxCommandEvent &event)
 
 {
