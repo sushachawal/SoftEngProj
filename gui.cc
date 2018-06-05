@@ -1,7 +1,8 @@
-#include "gui.h"
+	#include "gui.h"
 #include <GL/glut.h>
 //#include "wx_icon.xpm"
 #include <iostream>
+#include <cmath>
 
 
 using namespace std;
@@ -35,11 +36,20 @@ MyGLCanvas::MyGLCanvas(wxWindow *parent, wxWindowID id, monitor* monitor_mod, na
 void MyGLCanvas::DrawMonSig(float y, float gap, int monnum, int cyclesdisplayed)
 {
   //Draw the axes:
-  float vert0 = y + 0.2*gap;
-  float vert1 = y + 0.8*gap;
+  float vert0;
+  float vert1;
+  if (gap<60){
+		vert0 = y + 0.3*gap;
+		vert1 = y + 0.7*gap;
+  } else{
+		vert0 = y + 0.2*gap;
+		vert1 = y + 0.8*gap;
+  }
+
+
   DrawMonLabel(0 + w*0.1,vert1 + (vert1-vert0)*0.1,monnum);
   float cycle_gap = 0.75*w/cyclesdisplayed;
-  float sigheight = (vert1-vert0)*0.8;
+  float sigheight = (vert1-vert0)*0.9;
   
   //Draw Horizontal Axis
   glColor3f(0.0, 0.0, 0.0);
@@ -47,19 +57,42 @@ void MyGLCanvas::DrawMonSig(float y, float gap, int monnum, int cyclesdisplayed)
   glVertex2f(0 + w*0.1, vert0);
   glVertex2f(w - w*0.1, vert0);
   glEnd();
-  int every = 1;
-  if(cyclesdisplayed>=25 && w <= 1370) every = 10; 
-  else if(w <= 600 && cyclesdisplayed>=15) every = 10;
+  int every;
+  if (cyclesdisplayed < 2){
+		every = 1;
+	} else {
+		every = pow(10.0, floor(log10(cyclesdisplayed/2)));
+	}
+	if (w<=600) {
+		every = every*2;
+	}
+  /*
+  if(cyclesdisplayed>=25 && w <= 1370) {
+		every = 10; 
+	}
+  else if(w <= 600 && cyclesdisplayed>=15) {
+		every = 10;
+	}
+	* */
   for (int i=0; i<=cyclesdisplayed; i+=every){
-	glColor3f(0.87, 0.87, 0.87);
-	glBegin(GL_LINE_STRIP);
-	glVertex2f(0 + w*0.1 + cycle_gap*i, vert0);
-	glVertex2f(0 + w*0.1 + cycle_gap*i, vert0+sigheight);
-	glEnd();
-	string number = to_string(i);
-	glColor3f(0.0, 0.0, 1.0);
-	glRasterPos2f(0 + w*0.1 + cycle_gap*i, vert0 - 10);
-	for(int j =0; j<number.size();j++)glutBitmapCharacter(GLUT_BITMAP_HELVETICA_10 , number[j]);
+		// Always show final tick.
+		if (cyclesdisplayed-i < 0.5*every){
+			i = cyclesdisplayed;						
+		}
+		else if (cyclesdisplayed - i < every){
+			every = cyclesdisplayed - i;
+		}
+		glColor3f(0.87, 0.87, 0.87);
+		glBegin(GL_LINE_STRIP);
+		glVertex2f(0 + w*0.1 + cycle_gap*i, vert0);
+		glVertex2f(0 + w*0.1 + cycle_gap*i, vert0+sigheight);
+		glEnd();
+		string number = to_string(i);
+		glColor3f(0.0, 0.0, 1.0);
+		glRasterPos2f(0 + w*0.1 + cycle_gap*i, vert0 - 10);
+		for(int j =0; j<number.size();j++){
+			glutBitmapCharacter(GLUT_BITMAP_HELVETICA_10 , number[j]);
+		}
   }
   
   //Draw Horizontal Axis Arrow
@@ -84,6 +117,7 @@ void MyGLCanvas::DrawMonSig(float y, float gap, int monnum, int cyclesdisplayed)
   glVertex2f(0 + w*0.1 - gap*0.03, vert1);
   glEnd();
   
+  //Draw Signal
   glColor3f(1.0, 0.0, 0.0);
   glBegin(GL_LINE_STRIP);
   asignal s;
@@ -384,7 +418,7 @@ MyFrame::MyFrame(wxWindow *parent, const wxString& title, const wxPoint& pos, co
   button_sizer->Add(homeButton,0, wxALL, 10);
   button_sizer->Add(new wxStaticText(this, wxID_ANY, "Cycles"), 0, wxTOP|wxLEFT|wxRIGHT, 10);
   spin = new wxSpinCtrl(this, MY_SPINCNTRL_ID, wxString("10"));
-  spin->SetRange(0, 50);
+  spin->SetRange(0, maxcycles);
   button_sizer->Add(spin, 0 , wxALL, 10);
   
   topsizer->Add(button_sizer, 0, wxALIGN_CENTER);
@@ -508,7 +542,7 @@ void MyFrame::OnButton(wxCommandEvent &event)
 void MyFrame::OnButton2(wxCommandEvent &event)
   // Event handler for the push button 2
 {
-  int n, ncycles, index, nummons = 0, numsw = 0, maxval = 50;
+  int n, ncycles, index, nummons = 0, numsw = 0, maxval = maxcycles;
   bool ischecked, ok, ismon, ishigh;
   
   for(index = 0; index < gui_ids_signals.size(); index++){
@@ -571,7 +605,7 @@ void MyFrame::runnetwork(int ncycles)
   // Function to run the network, derived from corresponding function in userint.cc
 {
   bool ok = true;
-  int n = 0, maxval = 50;
+  int n = 0, maxval = maxcycles;
 
   while ((n < ncycles) && ok && cyclescompleted + n < maxval) {
     dmz->executedevices (ok);
