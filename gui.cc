@@ -147,11 +147,20 @@ void MyGLCanvas::DrawMonLabel(float x, float y, int monnum){
   for (int i = 0; i < monlabel.size(); i++) glutBitmapCharacter(GLUT_BITMAP_HELVETICA_10 , monlabel[i]);
 }
 
-void MyGLCanvas::Render(wxString example_text, int cycles)
-  // Draws canvas contents - the following example writes the string "example text" onto the canvas
-  // and draws a signal trace. The trace is artificial if the simulator has not yet been run.
-  // When the simulator is run, the number of cycles is passed as a parameter and the first monitor
-  // trace is displayed.
+/***********************************************************************
+ * Author: Sushant
+ * 
+ * Draws canvas contents -
+ * When the simulator is run, the number of cycles is passed as a parameter and the monitor
+ * traces are displayed.
+ *
+ * @param cycles, example_test (deprecated)
+ *
+ * @return bool true if the parsing was successful without any syntax
+ * or semantic errors and false if there were some errors.
+ *
+ */
+void MyGLCanvas::Render(int cycles)
 {
   float y;
   unsigned int i;
@@ -178,22 +187,7 @@ void MyGLCanvas::Render(wxString example_text, int cycles)
 	for(int i = 0; i < mcount; i++){
 	  DrawMonSig(i*gap, gap, i, cyclesdisplayed);
 	}
-	
-    //glColor3f(1.0, 0.0, 0.0);
-    //glBegin(GL_LINE_STRIP);
-    //for (i=0; i<cyclesdisplayed; i++) {
-      //if (mmz->getsignaltrace(0, i, s)) {
-	//if (s==low) y = 10.0;
-	//if (s==high) y = 30.0;
-	//glVertex2f(20*i+10.0, y); 
-	//glVertex2f(20*i+30.0, y);
-      //}
-    //}
-    //glEnd();
 
-  } else {
-	  
-	  
   }
 
 
@@ -233,8 +227,7 @@ void MyGLCanvas::OnPaint(wxPaintEvent& event)
 
   wxPaintDC dc(this); // required for correct refreshing under MS windows
   GetClientSize(&w, &h);
-  text.Printf("Canvas redrawn by OnPaint event handler, canvas size is %d by %d", w, h);
-  Render(text);
+  Render();
 }
 
 void MyGLCanvas::OnSize(wxSizeEvent& event)
@@ -254,30 +247,24 @@ void MyGLCanvas::OnMouse(wxMouseEvent& event)
   if (event.ButtonDown()) {
     last_x = event.m_x;
     last_y = event.m_y;
-    text.Printf("Mouse button %d pressed at %d %d", event.GetButton(), event.m_x, h-event.m_y);
   }
-  if (event.ButtonUp()) text.Printf("Mouse button %d released at %d %d", event.GetButton(), event.m_x, h-event.m_y);
   if (event.Dragging()) {
     pan_x += event.m_x - last_x;
     pan_y -= event.m_y - last_y;
     last_x = event.m_x;
     last_y = event.m_y;
     init = false;
-    text.Printf("Mouse dragged to %d %d, pan now %d %d", event.m_x, h-event.m_y, pan_x, pan_y);
   }
-  if (event.Leaving()) text.Printf("Mouse left window at %d %d", event.m_x, h-event.m_y);
   if (event.GetWheelRotation() < 0) {
     zoom = zoom * (1.0 - (double)event.GetWheelRotation()/(20*event.GetWheelDelta()));
     init = false;
-    text.Printf("Negative mouse wheel rotation, zoom now %f", zoom);
   }
   if (event.GetWheelRotation() > 0) {
     zoom = zoom / (1.0 + (double)event.GetWheelRotation()/(20*event.GetWheelDelta()));
     init = false;
-    text.Printf("Positive mouse wheel rotation, zoom now %f", zoom);
   }
 
-  if (event.GetWheelRotation() || event.ButtonDown() || event.ButtonUp() || event.Dragging() || event.Leaving()) Render(text);
+  if (event.GetWheelRotation() || event.ButtonDown() || event.ButtonUp() || event.Dragging() || event.Leaving()) Render();
 }
 
 // MyFrame ///////////////////////////////////////////////////////////////////////////////////////
@@ -496,7 +483,7 @@ void MyFrame::OnButton(wxCommandEvent &event)
     mmz->resetmonitor ();
     dmz->initdevices();
     runnetwork(spin->GetValue());
-    canvas->Render("Run button pressed", cyclescompleted);
+    canvas->Render(cyclescompleted);
   }
 }
 
@@ -531,7 +518,7 @@ void MyFrame::OnButton2(wxCommandEvent &event)
   
   if(continueOn){
 	runnetwork(spin->GetValue());
-	canvas->Render("Continue button pressed", cyclescompleted);
+	canvas->Render(cyclescompleted);
 	if(cyclescompleted >= maxval){
 		wxMessageBox( _("Maximum number of cycles reached") );
 	}
