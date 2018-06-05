@@ -507,7 +507,7 @@ void MyFrame::OnButton(wxCommandEvent &event)
 }
 
 void MyFrame::OnButton2(wxCommandEvent &event)
-  // Event handler for the push button 2
+  // Event handler for the continue button
 {
   int n, ncycles, index, nummons = 0, numsw = 0, maxval = 50;
   bool ischecked, ok, ismon, ishigh;
