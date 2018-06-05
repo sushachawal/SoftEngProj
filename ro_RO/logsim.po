@@ -69,7 +69,7 @@ msgid ""
 "May 2018"
 msgstr ""
 "Simulatorul Logic\n"
-"Autori: Vlad Tomescu Matt Ashman, Suşant Ăţuăl"
+"Autori: Vlad Tomescu Matt Ashman, Suşant Ăţuăl\nMai 2018"
 
 #: /homes/ssa43/GF2_shared/ssa43/SoftEngProj/gui.cc:449
 msgid "About Logic Simulator."
