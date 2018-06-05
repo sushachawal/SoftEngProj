@@ -173,6 +173,7 @@ void devices::makerc (name id, int hightime, bool &ok)
   devlink d;
   netz->adddevice (rc, id, d);
   netz->addoutput (d, blankname);
+  d->olist->sig = high;
   d->endtime = hightime;
   d->counter =0;
   
@@ -360,7 +361,7 @@ void devices::execrc(devlink d)
 {
   if (d->olist->sig == falling)
     signalupdate (low, d->olist->sig);
-  else signalupdate(high, d->olist->sig);
+  //else signalupdate(high, d->olist->sig);
 }
 
 
@@ -389,12 +390,12 @@ void devices::updateclocks (void)
 }
 
 /***********************************************************************
- *
- * Increment the counters in the rc devices and initiate changes
- * in their outputs when the end of their period is reached.
- * Called by executedevices.
- *
- */
+*
+* Increment the counters in the rc devices and initiate changes
+* in their outputs when the end of their period is reached.
+* Called by executedevices.
+*
+*/
 void devices::updatercs (void)
 {
   devlink d;

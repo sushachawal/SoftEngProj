@@ -16,14 +16,14 @@ scanner::scanner(names* names_mod, const char* defname)
 
 	clkname = nmz->lookup("CLOCK");
 	swtchname = nmz->lookup("SWITCH");
-  rcname = nmz->lookup("RC");
+	rcname = nmz->lookup("RC");
 	andname = nmz->lookup("AND");
 	nandname = nmz->lookup("NAND");
 	orname = nmz->lookup("OR");
 	norname = nmz->lookup("NOR");
 	dtypename = nmz->lookup("DTYPE");
 	xorname = nmz->lookup("XOR");
-  notname = nmz->lookup("NOT");
+	notname = nmz->lookup("NOT");
 	monitorname = nmz->lookup("MONITOR");
 
 	inf.open(defname);

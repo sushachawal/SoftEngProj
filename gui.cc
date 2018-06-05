@@ -500,6 +500,7 @@ void MyFrame::OnButton(wxCommandEvent &event)
 	continueOn = true;
     cyclescompleted = 0;
     mmz->resetmonitor ();
+    dmz->initdevices();
     runnetwork(spin->GetValue());
     canvas->Render("Run button pressed", cyclescompleted);
   }

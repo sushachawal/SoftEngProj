@@ -189,7 +189,7 @@ void parser::generator(void){
         } else throw parser_exception("Error: 'SWITCH' initial state may only take values '1' or '0'.");
       } else throw parser_exception("Error: 'SWITCH' initial state must be specified as either '1' or '0'.");
     } else throw parser_exception("Error: Error: invalid device name. Device names may only contain letters or digits may not take the form of command words  'CLOCK', 'AND', 'MONITOR' etc.");
-  } /*else if (curid == smz->nmz->lookup("RC")) {
+  } else if (curid == smz->nmz->lookup("RC")) {
     smz->getsymbol(cursym, curid, curnum);
     if(cursym == namesym){                  // Check namesym after gensym
       smz->getsymbol(cursym, curid, curnum);
@@ -213,7 +213,7 @@ void parser::generator(void){
         } else throw parser_exception("Error: 'RC' time constant must be greater than 0.");
       } else throw parser_exception("Error: 'RC' time constant must be specified.");
     } else throw parser_exception("Error: invalid device name. Device names may only contain letters or digits may not take the form of command words  'CLOCK', 'AND', 'MONITOR' etc.");
-  } */
+  } 
   else throw parser_exception("Error: this should never happen");
 }
 
