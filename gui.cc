@@ -217,6 +217,11 @@ void MyGLCanvas::InitGL()
   glMatrixMode(GL_MODELVIEW);
   glLoadIdentity();
   glTranslated(pan_x, pan_y, 0.0);
+  if (zoom*w < 230) {
+		zoom = 230.0/w;
+	} else if (zoom*h < 315) {
+		zoom = 315.0/h;
+	}
   glScaled(zoom, zoom, zoom);
 }
 
