@@ -267,7 +267,7 @@ void parser::logic(devicekind dkind){
         if(!netz->finddevice(devid)){
           dmz->makedevice(dkind, devid, devnum, ok);
           if(!ok){
-            throw parser_exception("Error: the number of inputs may not exceed 16.");
+            throw parser_exception("Error: the number of inputs must lie in the range 1-16.");
           }
         } else throw parser_exception("Error: device already exists!");
       }

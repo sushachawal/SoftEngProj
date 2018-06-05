@@ -12,7 +12,6 @@ scanner::scanner(names* names_mod, const char* defname)
 
 	nmz = names_mod;
 	eofile = false;
-  symcount = 0;
 
 	clkname = nmz->lookup("CLOCK");
 	swtchname = nmz->lookup("SWITCH");
@@ -32,7 +31,14 @@ scanner::scanner(names* names_mod, const char* defname)
 		cout << "Error: cannot open file " << defname << " for reading" << endl;
 		exit(1);
 	}
-    getch();
+  
+  inf2.open(defname);
+  // First get the file length. Used for error reporting.
+  inf.seekg(-1, inf.end);
+  file_length = inf.tellg();
+  inf.seekg(0, inf.beg);
+  
+  getch();
 }
 
 void scanner::getch()
@@ -108,55 +114,43 @@ void scanner::getsymbol(symbol& s, name& id, int& num)
 	skipspaces();
 	if (eofile) {// end of file:
 		s = eofsym;
-    symcount ++;
 	}
 	else {
 		if (isdigit(curch)) { // number:
 			s=numsym;
-			getnumber(num);
-      symcount ++;
+      getnumber(num);
 		}
 		else {
 			if (isalpha(curch)) { // name or keyword:
 				getname(id);
 				if (id == clkname || id == swtchname || id == rcname){
 					s=gensym;
-          symcount ++;
 				} else{
 					if (id == andname){
 						s = andsym;
-            symcount ++;
 					} else {
 						if (id == nandname){
 						  s = nandsym;
-              symcount ++;
 						} else {
 						  if (id == orname){
 							s = orsym;
-                symcount ++;
 						  } else {
 								if (id == norname){
 									s = norsym;
-                  symcount ++;
 								} else {
 									if (id == dtypename) {
 									s = dtypesym;
-                    symcount ++;
 									} else {
 										if (id == xorname) {
 											s = xorsym;
-                      symcount ++;
 										} else {
                       if (id == notname) {
                         s = notsym;
-                        symcount ++;
                       } else {
                         if (id == monitorname) {
                           s=monsym;
-                          symcount ++;
                         } else {
                           s=namesym; // not a keyword
-                          symcount ++;
                         }
                       }
 										}
@@ -171,10 +165,8 @@ void scanner::getsymbol(symbol& s, name& id, int& num)
                 getch();
                 if (curch == '>') {
                   s = arrowsym;
-                  symcount ++;
                 } else {
                   s = badsym;
-                  symcount ++;
                 }
               } else {
                 switch(curch) {
@@ -205,11 +197,6 @@ bool scanner::checksemicol()
 
 void scanner::reporterror()
 {
-  // first check if file is empty
-  if (symcount == 0){
-    cout << "Empty file" << endl;
-    return;
-  }
 	//cout << "Error starts at:" << int(curch) << endl;
   string line_str;
   string report_str = "";
@@ -220,44 +207,65 @@ void scanner::reporterror()
 
   int pos = inf.tellg(); // store current positon
   
-  if (pos == -1) {          // file isn't empty, so this is end of file.
-    inf.seekg(0, ios::end);  // go to the last character.
-    pos == inf.tellg();     // store position of the last character
-  }
-  
-  inf.seekg(0, inf.beg); // go to the beginning of the file
-  
-  while(counter<pos){
-    inf.get(c);
-    if (c == '\n') {
-      line++;
-      c_count = 0;
-    } else c_count ++;
-    counter++;
-  }
-
-  inf.seekg(0, inf.beg); // go to the beginning of the file
-  
-  if (c_count == 0){     // if error detected at the start of a line, mark error at the end of the previous line.
-    line --;
-    for (counter = 0; counter <= line; counter ++){
-      if(!getline(inf, line_str));
+  if (pos == -1) {          // either end of file, or empty file.
+    if(file_length == 0){ // empty file
+      cout << "Input file is empty." << endl;
+      return;
+    } else {              // error at the end of the file.
+      pos = file_length;
+      inf2.seekg(0, inf2.beg); // go to the beginning of the file
+      
+      while(counter<pos){
+        inf2.get(c);
+        if (c == '\n') {
+          line++;
+          c_count = 0;
+        } else c_count ++;
+        counter++;
+      }
+      
+      inf2.seekg(0, inf2.beg); // go to the beginning of the file
+      
+      for (counter = 0; counter <= line; counter ++){
+        getline(inf2, line_str);
+      }
+      c_count = line_str.length() + 2;
     }
-    c_count = line_str.length() + 2;
-  }
-  else{
-    for (counter = 0; counter <= line; counter ++){
-      if(!getline(inf, line_str));
+  } else {
+    inf.seekg(0, inf.beg); // go to the beginning of the file
+    
+    while(counter<pos){
+      inf.get(c);
+      if (c == '\n') {
+        line++;
+        c_count = 0;
+      } else c_count ++;
+      counter++;
     }
+    
+    inf.seekg(0, inf.beg); // go to the beginning of the file
+    
+    if (c_count == 0){     // if error detected at the start of a line, mark error at the end of the previous line.
+      line --;
+      for (counter = 0; counter <= line; counter ++){
+        if(!getline(inf, line_str));
+      }
+      c_count = line_str.length() + 2;
+    }
+    else{
+      for (counter = 0; counter <= line; counter ++){
+        getline(inf, line_str);
+      }
+    }
+    
+    inf.seekg(pos, inf.beg); // return to position before line is read
   }
   
-  inf.seekg(pos, inf.beg); // return to position before line is read
-
   for (counter= 0; counter < c_count-1; counter++){
     report_str += ' ';
   }
   report_str[c_count-2] = '^';
-  cout << endl << "Line: " << line << " Character: " << c_count << endl;
+  cout << endl << "Line: " << line << " Character: " << c_count-1 << endl;
   cout << line_str << endl;
   cout << report_str << endl;
   return;

@@ -2,8 +2,10 @@
 #include "userint.h"
 #include "gui.h"
 #include <GL/glut.h>
+#include <wx/intl.h> 
 
 #define USE_GUI
+
 
 IMPLEMENT_APP(MyApp)
   
@@ -14,7 +16,7 @@ bool MyApp::OnInit()
     wcout << "Usage:      " << argv[0] << " [filename]" << endl;
     exit(1);
   }
-
+  cout << argv[0] << endl;
   // Construct the six classes required by the innards of the logic simulator
   nmz = new names();
   netz = new network(nmz);
@@ -27,9 +29,18 @@ bool MyApp::OnInit()
 #ifdef USE_GUI
     // glutInit cannot cope with Unicode command line arguments, so we pass
     // it some fake ASCII ones instead
+    wxLocale * my_locale;
+
+	my_locale = new wxLocale;
+	if(my_locale->GetSystemLanguage() == wxLANGUAGE_UNKNOWN) cout << "Loading default system lang due to invalid LANG flag" << endl;
+  
+	my_locale->AddCatalogLookupPathPrefix(".");
+	my_locale->Init();
+	if(my_locale->AddCatalog("logsim"));
+	else cout << "\033[1;31m" << "Warning specified language is not supported! Loading default language" << "\033[0m\n" << endl;
     char **tmp1; int tmp2 = 0; glutInit(&tmp2, tmp1);
     // Construct the GUI
-    MyFrame *frame = new MyFrame(NULL, "Logic simulator", wxDefaultPosition,  wxSize(800, 600), nmz,netz, dmz, mmz);
+    MyFrame *frame = new MyFrame(NULL, _("Logic Simulator"), wxDefaultPosition,  wxSize(800, 600), nmz,netz, dmz, mmz);
     frame->Show(true);
     return(true); // enter the GUI event loop
 #else

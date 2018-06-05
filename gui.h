@@ -6,6 +6,7 @@
 #include <wx/spinctrl.h>
 #include <wx/textctrl.h>
 #include <wx/wfstream.h>
+#include <wx/intl.h> 
 #include "names.h"
 #include "devices.h"
 #include "monitor.h"
@@ -17,7 +18,6 @@
 enum MyEnum{
   MY_SPINCNTRL_ID = wxID_HIGHEST + 1,
   MY_OPEN,
-  MY_ROMANIAN_ID,
   MY_BUTTON_ID,
   MY_BUTTON_ID2,
   HOME_BUTTON,
@@ -34,6 +34,7 @@ class MyFrame: public wxFrame
 	  long style = wxDEFAULT_FRAME_STYLE); // constructor
  private:
   MyGLCanvas *canvas;                     // OpenGL drawing area widget to draw traces
+  wxLocale *my_locale;					  // Object to help with translation
   wxSpinCtrl *spin;                       // control widget to select the number of cycles
   wxButton *continueButton;               // pointer to the continue button
   wxButton *homeButton;					  // pointer to the home button
@@ -47,12 +48,11 @@ class MyFrame: public wxFrame
   void runnetwork(int ncycles);           // function to run the logic network
   void OnExit(wxCommandEvent& event);     // event handler for exit menu item
   void OnAbout(wxCommandEvent& event);    // event handler for about menu item
-  void OnRomanian(wxCommandEvent& event); // event handler for language menu item
   void OnButton(wxCommandEvent& event);   // event handler for push button
   void OnButton2(wxCommandEvent& event);  // event handler for push button 2
   void OnSpin(wxSpinEvent& event);        // event handler for spin control
   void OnCheck(wxCommandEvent& event);    // event handler for checkbox
-  void OnHomeButton(wxCommandEvent &event);
+  void OnHomeButton(wxCommandEvent &event); // event handler for Reset View button
   vector<int> gui_ids_signals, netw_ids_signals, dev_ids_signals;
   vector<bool> is_monitored, switch_on;
   vector<int> gui_ids_switches, netw_ids_switches;
