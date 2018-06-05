@@ -17,9 +17,10 @@ class scanner {
 
 	char curch; // current character
 	bool eofile; // true when end of file has been reached
+  int file_length; // stores the length of the file (number of characters)
 	ifstream inf; // input file to be read from
+  ifstream inf2; // input file to be read from when reporting error at the end of the file
 	// names* nmz;
-  int symcount;
 
 	name clkname;
 	name swtchname;
