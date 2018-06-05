@@ -1,0 +1,7 @@
+SWITCH SW 0;
+
+NAND N1 1;
+
+SW -> N1.I1;
+
+MONITOR N1;

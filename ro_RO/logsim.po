@@ -1,0 +1,91 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Logic Simulator\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2018-06-05 15:18+0100\n"
+"PO-Revision-Date: 2018-06-05 16:32+0100\n"
+"Last-Translator: Sushant Achawal <ssa43@cam.ac.uk>\n"
+"Language-Team: Group 5\n"
+"Language: Romanian\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Poedit-Language: Romanian\n"
+"X-Poedit-Country: ROMANIA\n"
+
+#: /homes/ssa43/GF2_shared/ssa43/SoftEngProj/gui.cc:312
+msgid "&Romanian"
+msgstr "Ro"
+
+#: /homes/ssa43/GF2_shared/ssa43/SoftEngProj/gui.cc:313
+msgid "&Languages"
+msgstr "Limba"
+
+#: /homes/ssa43/GF2_shared/ssa43/SoftEngProj/gui.cc:314
+msgid "&About"
+msgstr "Despre"
+
+#: /homes/ssa43/GF2_shared/ssa43/SoftEngProj/gui.cc:315
+msgid "&Quit"
+msgstr "Ieșire"
+
+#: /homes/ssa43/GF2_shared/ssa43/SoftEngProj/gui.cc:322
+msgid "&File"
+msgstr "Fişier"
+
+#: /homes/ssa43/GF2_shared/ssa43/SoftEngProj/gui.cc:383
+msgid "&Monitors"
+msgstr "Monitor"
+
+#: /homes/ssa43/GF2_shared/ssa43/SoftEngProj/gui.cc:412
+msgid "&Switches"
+msgstr "Întrerupătoare"
+
+#: /homes/ssa43/GF2_shared/ssa43/SoftEngProj/gui.cc:422
+msgid "Run"
+msgstr "Porneşte"
+
+#: /homes/ssa43/GF2_shared/ssa43/SoftEngProj/gui.cc:423
+msgid "Continue"
+msgstr "Continuă"
+
+#: /homes/ssa43/GF2_shared/ssa43/SoftEngProj/gui.cc:424
+msgid "Reset View"
+msgstr "Resetare vedere"
+
+#: /homes/ssa43/GF2_shared/ssa43/SoftEngProj/gui.cc:427
+msgid "Cycles"
+msgstr "Cicluri"
+
+#: /homes/ssa43/GF2_shared/ssa43/SoftEngProj/gui.cc:449
+msgid ""
+"Logic Simulator\n"
+"Authors: Vlad Tomescu, Matt Ashman, Sushant Achawal\n"
+"May 2018"
+msgstr ""
+"Simulatorul Logic\n"
+"Autori: Vlad Tomescu Matt Ashman, Suşant Ăţuăl"
+
+#: /homes/ssa43/GF2_shared/ssa43/SoftEngProj/gui.cc:449
+msgid "About Logic Simulator."
+msgstr "Despre Simulatorul Logic"
+
+#: /homes/ssa43/GF2_shared/ssa43/SoftEngProj/gui.cc:497
+msgid "Please select a maximum of 10 monitors"
+msgstr "Selectaţi maxim 10 monitoare"
+
+#: /homes/ssa43/GF2_shared/ssa43/SoftEngProj/gui.cc:553
+msgid "Maximum number of cycles reached"
+msgstr "Numărul maxim de cicluri atins"
+
+#: /homes/ssa43/GF2_shared/ssa43/SoftEngProj/gui.cc:557
+msgid "Modifications made/Nothing to continue. Press run first"
+msgstr "S-au făcut modificări/Nimic de continuat. Apăsati 'Porneşte' mai intâi."
+
+msgid "Logic Simulator"
+msgstr "Simulatorul Logic"
