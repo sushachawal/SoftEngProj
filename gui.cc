@@ -448,11 +448,6 @@ void MyFrame::OnAbout(wxCommandEvent &event)
   about.ShowModal();
 }
 
-
-
-
-
-
 void MyFrame::OnButton(wxCommandEvent &event)
   // Event handler for the push button
 {
@@ -519,13 +514,20 @@ void MyFrame::OnButton2(wxCommandEvent &event)
 	}
   }
   
+  
   for(index = 0; index < gui_ids_switches.size(); index++){
+	switch_on[index] = false;
 	ischecked = switchMenu->IsChecked(gui_ids_switches[index]);
-	ishigh = switch_on[index];
-	if(ischecked != ishigh){
-		continueOn = false;
+	if(ischecked){
+	dmz->setswitch(netw_ids_switches[index], high, ok);
+	switch_on[index] = true;
+	}
+	else{
+	dmz->setswitch(netw_ids_switches[index], low, ok);
 	}
   }
+  
+  
   
   if(continueOn){
 	runnetwork(spin->GetValue());

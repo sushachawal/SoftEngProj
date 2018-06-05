@@ -6,7 +6,6 @@
 
 #define USE_GUI
 
-
 IMPLEMENT_APP(MyApp)
   
 bool MyApp::OnInit()
@@ -36,11 +35,13 @@ bool MyApp::OnInit()
   
 	my_locale->AddCatalogLookupPathPrefix(".");
 	my_locale->Init();
-	if(my_locale->AddCatalog("logsim"));
+	if(my_locale->AddCatalog("logsim") ||  my_locale->GetSystemLanguage() == wxLANGUAGE_ENGLISH || wxLANGUAGE_ENGLISH_US);
 	else cout << "\033[1;31m" << "Warning specified language is not supported! Loading default language" << "\033[0m\n" << endl;
     char **tmp1; int tmp2 = 0; glutInit(&tmp2, tmp1);
     // Construct the GUI
+
     MyFrame *frame = new MyFrame(NULL, _("Logic Simulator"), wxDefaultPosition,  wxSize(800, 600), nmz,netz, dmz, mmz);
+
     frame->Show(true);
     return(true); // enter the GUI event loop
 #else
